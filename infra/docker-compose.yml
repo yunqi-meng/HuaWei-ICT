@@ -1,0 +1,80 @@
+services:
+  db:
+    profiles: ["cloud-scaffold"]
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: zhixiu
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zhixiu_local_development_only}
+      POSTGRES_DB: zhixiu
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-15432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zhixiu -d zhixiu"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    profiles: ["cloud-scaffold"]
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-16379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    image: zhixiu-api:1.0.0
+    env_file:
+      - path: ../.env.example
+      - path: ../.env
+        required: false
+    environment:
+      DATABASE_URL: sqlite:////data/zhixiu.db
+      UPLOAD_DIR: /data/uploads
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+    volumes:
+      - api_data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/readyz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  worker:
+    image: zhixiu-api:1.0.0
+    pull_policy: never
+    env_file:
+      - path: ../.env.example
+      - path: ../.env
+        required: false
+    environment:
+      DATABASE_URL: sqlite:////data/zhixiu.db
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - api_data:/data
+    command: ["python", "-m", "app.worker"]
+    depends_on:
+      api:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ../apps/web
+    ports:
+      - "127.0.0.1:${WEB_PORT:-5173}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  api_data:
+  pgdata:

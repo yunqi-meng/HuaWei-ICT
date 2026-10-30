@@ -1,0 +1,51 @@
+{
+  "key": "bluetooth-connection",
+  "title": "蓝牙连接基础检查",
+  "category": "app",
+  "version_no": 1,
+  "reviewer": "开发演示内容；上线前须人工审核",
+  "symptom_keywords": [
+    "蓝牙连不上",
+    "蓝牙无法连接",
+    "蓝牙找不到"
+  ],
+  "risk_keywords": [],
+  "source_refs": [
+    {
+      "title": "Microsoft Support：蓝牙连接基础检查",
+      "url": "https://support.microsoft.com/en-us/windows/hardware/bluetooth/fix-bluetooth-problems-in-windows"
+    }
+  ],
+  "graph": {
+    "entry": "check",
+    "applicability": {
+      "os_family": "windows",
+      "os_version_range": "11"
+    },
+    "nodes": {
+      "check": {
+        "type": "action",
+        "title": "查看蓝牙开关与外设状态",
+        "why": "先验证基础环境，避免无依据地更改驱动或删除数据。",
+        "instruction": "打开 设置 → 蓝牙和设备，查看蓝牙是否开启；确认外设有电，并按外设说明进入配对状态。不删除现有配对，不修改驱动。",
+        "expected_observation": "在设备列表中找到目标外设并按设备说明连接，观察能否正常使用。",
+        "risk_level": "reversible",
+        "rollback": "若刚才开启了蓝牙，可按需要恢复原开关状态。",
+        "stop_conditions": [
+          "出现异常发热、破损、焦味，或设备受学校/单位策略管理"
+        ],
+        "options": {
+          "worked": {
+            "label": "验证后确认已恢复",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "仍未恢复或无法操作",
+            "outcome": "handoff",
+            "reason": "基础检查未恢复，需现场确认"
+          }
+        }
+      }
+    }
+  }
+}

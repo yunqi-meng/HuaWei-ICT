@@ -1,0 +1,51 @@
+{
+  "key": "microphone-permission",
+  "title": "麦克风权限与输入选择",
+  "category": "audio",
+  "version_no": 1,
+  "reviewer": "开发演示内容；上线前须人工审核",
+  "symptom_keywords": [
+    "麦克风不能用",
+    "麦克风没声音",
+    "录不到声音"
+  ],
+  "risk_keywords": [],
+  "source_refs": [
+    {
+      "title": "Microsoft Support：麦克风权限与输入选择",
+      "url": "https://support.microsoft.com/en-us/windows/hardware/drivers/fix-microphone-problems"
+    }
+  ],
+  "graph": {
+    "entry": "check",
+    "applicability": {
+      "os_family": "windows",
+      "os_version_range": "11"
+    },
+    "nodes": {
+      "check": {
+        "type": "action",
+        "title": "检查目标应用的麦克风权限",
+        "why": "先验证基础环境，避免无依据地更改驱动或删除数据。",
+        "instruction": "打开 设置 → 隐私和安全性 → 麦克风，查看目标应用是否获准访问。只为你信任且要使用麦克风的应用开启权限。",
+        "expected_observation": "回到该应用进行录音测试，确认能录入并回放声音。",
+        "risk_level": "reversible",
+        "rollback": "可在同一页面关闭刚才开启的权限。",
+        "stop_conditions": [
+          "出现异常发热、破损、焦味，或设备受学校/单位策略管理"
+        ],
+        "options": {
+          "worked": {
+            "label": "验证后确认已恢复",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "仍未恢复或无法操作",
+            "outcome": "handoff",
+            "reason": "基础检查未恢复，需现场确认"
+          }
+        }
+      }
+    }
+  }
+}

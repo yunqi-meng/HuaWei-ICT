@@ -1,0 +1,51 @@
+{
+  "key": "mouse-connection",
+  "title": "有线鼠标连接检查",
+  "category": "app",
+  "version_no": 1,
+  "reviewer": "开发演示内容；上线前须人工审核",
+  "symptom_keywords": [
+    "鼠标没反应",
+    "有线鼠标不动",
+    "鼠标不能用"
+  ],
+  "risk_keywords": [],
+  "source_refs": [
+    {
+      "title": "Microsoft Support：有线鼠标连接检查",
+      "url": "https://support.microsoft.com/en-us/windows/hardware/input-devices/mouse-and-keyboard-problems-in-windows"
+    }
+  ],
+  "graph": {
+    "entry": "check",
+    "applicability": {
+      "os_family": "windows",
+      "os_version_range": "11"
+    },
+    "nodes": {
+      "check": {
+        "type": "action",
+        "title": "检查鼠标连接",
+        "why": "先验证基础环境，避免无依据地更改驱动或删除数据。",
+        "instruction": "确认是普通 USB 有线鼠标且接口没有破损或发热。将鼠标直接连接到电脑上另一个完好的 USB 接口，暂不通过扩展坞。不要插拔正在传输数据的存储设备。",
+        "expected_observation": "移动鼠标并点击空白区域，确认指针与按键恢复。",
+        "risk_level": "reversible",
+        "rollback": "需要时可将鼠标接回原接口。",
+        "stop_conditions": [
+          "出现异常发热、破损、焦味，或设备受学校/单位策略管理"
+        ],
+        "options": {
+          "worked": {
+            "label": "验证后确认已恢复",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "仍未恢复或无法操作",
+            "outcome": "handoff",
+            "reason": "基础检查未恢复，需现场确认"
+          }
+        }
+      }
+    }
+  }
+}

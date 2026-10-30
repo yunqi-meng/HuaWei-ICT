@@ -1,0 +1,204 @@
+{
+  "key": "network-no-internet",
+  "title": "Wi-Fi 已连接但网页打不开",
+  "category": "network",
+  "version_no": 1,
+  "reviewer": "开发演示内容；上线前需人工审核",
+  "symptom_keywords": [
+    "连上wifi",
+    "连上 wi-fi",
+    "连不上网",
+    "网页打不开",
+    "无法上网",
+    "有网但",
+    "wifi但不能",
+    "无internet",
+    "无法访问"
+  ],
+  "risk_keywords": [],
+  "source_refs": [
+    {
+      "title": "Microsoft 支持：修复 Windows 中的 Wi-Fi 连接问题",
+      "url": "https://support.microsoft.com/zh-cn/windows"
+    }
+  ],
+  "graph": {
+    "entry": "check_scope",
+    "nodes": {
+      "check_scope": {
+        "type": "observe",
+        "title": "确认是不是只有这台电脑无法上网",
+        "why": "如果其他设备也不能上网，问题大概率在路由器或校园网，而不是这台电脑。",
+        "instruction": "用手机或其他电脑连接同一个 Wi-Fi，试试能不能正常打开网页。",
+        "expected_observation": "其他设备可以正常上网，或同样无法上网。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "only_this": {
+            "label": "其他设备可以上网",
+            "next": "check_proxy"
+          },
+          "others_too": {
+            "label": "其他设备也不能上网",
+            "next": "upstream_hint"
+          },
+          "cannot_check": {
+            "label": "没有其他设备可试",
+            "next": "check_proxy"
+          }
+        }
+      },
+      "upstream_hint": {
+        "type": "explain",
+        "title": "问题可能在路由器或校园网",
+        "why": "多台设备同时无法上网，通常不是单台电脑的设置问题。",
+        "instruction": "如果是宿舍/家里路由器：断电 30 秒后重新通电，等 2 分钟再试。如果是校园网：确认校园网认证页面是否能打开、账号是否在线数超限。",
+        "expected_observation": "重启路由器或完成校园网认证后网络恢复。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "worked": {
+            "label": "重启/认证后恢复了",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "还是不行",
+            "outcome": "handoff",
+            "reason": "多台设备均无法上网，需要现场检查网络环境",
+            "failed": true
+          },
+          "campus_auth": {
+            "label": "校园网认证有问题",
+            "outcome": "handoff",
+            "reason": "校园网认证异常，建议到服务点确认账号状态"
+          }
+        }
+      },
+      "check_proxy": {
+        "type": "action",
+        "title": "检查系统代理设置",
+        "why": "某些软件会悄悄开启系统代理，导致浏览器无法直接联网。",
+        "instruction": "按 Win + I 打开设置 → 网络和 Internet → 代理。确认“使用代理服务器”为关闭，“自动检测设置”为开启。",
+        "expected_observation": "代理开关处于关闭状态；若原本是开启的，关闭后网页应能打开。",
+        "risk_level": "reversible",
+        "rollback": "如原本就是开启状态且你不确定，可回到同一页面重新打开该开关。",
+        "stop_conditions": [
+          "页面中出现你不认识且正在使用的单位/校园代理配置"
+        ],
+        "options": {
+          "worked": {
+            "label": "关闭后网页能打开了",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "还是打不开",
+            "next": "flush_dns",
+            "failed": true
+          },
+          "cant_find": {
+            "label": "找不到这个设置",
+            "next": "proxy_alt"
+          }
+        }
+      },
+      "proxy_alt": {
+        "type": "explain",
+        "title": "通过搜索打开代理设置",
+        "why": "不同系统版本菜单位置略有差异。",
+        "instruction": "点击任务栏搜索框，输入“代理设置”，选择“代理服务器设置”打开同一页面。",
+        "expected_observation": "能打开“代理”设置页面。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "done": {
+            "label": "找到了，关闭代理后仍未恢复",
+            "next": "flush_dns"
+          },
+          "worked": {
+            "label": "关闭代理后已恢复",
+            "outcome": "resolved"
+          },
+          "still_cant": {
+            "label": "还是找不到",
+            "outcome": "handoff",
+            "reason": "用户无法定位系统设置入口，需要人工协助"
+          }
+        }
+      },
+      "flush_dns": {
+        "type": "action",
+        "title": "刷新 DNS 缓存",
+        "why": "缓存的错误解析记录会导致网页打不开。",
+        "instruction": "右键开始菜单 → 终端管理员（或 Windows PowerShell 管理员）→ 输入 ipconfig /flushdns 后回车，看到“已成功刷新 DNS 解析缓存”。",
+        "expected_observation": "命令执行成功，再次打开网页测试。",
+        "risk_level": "reversible",
+        "rollback": "该操作无需回退，系统会自动重建缓存。",
+        "stop_conditions": [],
+        "options": {
+          "worked": {
+            "label": "刷新后能上网了",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "还是不行",
+            "next": "check_dns_auto",
+            "failed": true
+          },
+          "cant_run": {
+            "label": "命令窗口打不开/报错",
+            "outcome": "handoff",
+            "reason": "无法执行基础网络命令，可能涉及系统权限问题"
+          }
+        }
+      },
+      "check_dns_auto": {
+        "type": "action",
+        "title": "确认 DNS 为自动获取",
+        "why": "手工设置的错误 DNS 会导致网页无法解析。",
+        "instruction": "设置 → 网络和 Internet → 高级网络设置 → 更多网络适配器选项 → 右键当前 Wi-Fi → 属性 → 双击“Internet 协议版本 4 (TCP/IPv4)” → 选择“自动获得 IP 地址”和“自动获得 DNS 服务器地址”→ 确定。",
+        "expected_observation": "两个选项均为“自动获得”；修改后网页应能打开。",
+        "risk_level": "reversible",
+        "rollback": "记下修改前的数值即可在同一页面改回。",
+        "stop_conditions": [
+          "当前网络由单位/学校统一指定固定 IP"
+        ],
+        "options": {
+          "worked": {
+            "label": "改回自动后能上网了",
+            "outcome": "resolved"
+          },
+          "already_auto": {
+            "label": "本来就是自动获取",
+            "next": "handoff_node",
+            "failed": true
+          },
+          "still_fail": {
+            "label": "改了还是不行",
+            "next": "handoff_node",
+            "failed": true
+          }
+        }
+      },
+      "handoff_node": {
+        "type": "handoff",
+        "title": "转人工检查",
+        "why": "低风险自助步骤已完成，问题仍未解决。",
+        "instruction": "已完成的排查会写入交接摘要，志愿者到场后直接继续检查网卡驱动、校园网客户端或硬件。",
+        "expected_observation": "",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "to_handoff": {
+            "label": "转人工义诊",
+            "outcome": "handoff",
+            "reason": "低风险网络排查流程已完成但问题仍存在"
+          }
+        }
+      }
+    }
+  }
+}

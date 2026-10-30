@@ -1,0 +1,40 @@
+name: Verify Zhixiu
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        database: [sqlite, postgres]
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: zhixiu
+          POSTGRES_PASSWORD: ci-test-only
+          POSTGRES_DB: zhixiu_tests
+        ports: ['15432:5432']
+        options: --health-cmd "pg_isready -U zhixiu -d zhixiu_tests" --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r apps/api/requirements.lock.txt
+      - run: python -m unittest discover -s tests -q
+        working-directory: apps/api
+        env:
+          TEST_DATABASE_URL: ${{ matrix.database == 'postgres' && 'postgresql://zhixiu:ci-test-only@127.0.0.1:15432/zhixiu_tests' || '' }}
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+        working-directory: apps/web
+      - run: npm test
+        working-directory: apps/web
+      - run: npm run build
+        working-directory: apps/web

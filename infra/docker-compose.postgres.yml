@@ -1,0 +1,18 @@
+services:
+  db:
+    profiles: !reset []
+  redis:
+    profiles: !reset []
+  api:
+    environment:
+      DATABASE_URL: postgresql://zhixiu:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/zhixiu
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  worker:
+    environment:
+      DATABASE_URL: postgresql://zhixiu:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/zhixiu
+      REDIS_URL: redis://redis:6379/0

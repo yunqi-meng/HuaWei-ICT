@@ -1,0 +1,164 @@
+{
+  "key": "audio-no-sound",
+  "title": "电脑外放没有声音",
+  "category": "audio",
+  "version_no": 1,
+  "reviewer": "开发演示内容；上线前需人工审核",
+  "symptom_keywords": [
+    "没声音",
+    "无声",
+    "外放",
+    "扬声器",
+    "耳机有声",
+    "音量",
+    "不出声"
+  ],
+  "risk_keywords": [],
+  "source_refs": [
+    {
+      "title": "Microsoft 支持：修复 Windows 中的声音或音频问题",
+      "url": "https://support.microsoft.com/zh-cn/windows"
+    }
+  ],
+  "graph": {
+    "entry": "check_output_device",
+    "nodes": {
+      "check_output_device": {
+        "type": "observe",
+        "title": "确认当前声音输出设备",
+        "why": "连接蓝牙耳机/显示器后，系统可能把声音输出到了其他设备。",
+        "instruction": "点击任务栏右下角音量图标，查看音量滑块上方显示的设备名称（例如“扬声器”或某个蓝牙设备）。",
+        "expected_observation": "能看到当前输出设备名称，并判断是否是你想用的设备。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "wrong_device": {
+            "label": "输出到了别的设备",
+            "next": "select_output"
+          },
+          "correct_device": {
+            "label": "就是扬声器，但没声音",
+            "next": "check_mixer"
+          },
+          "cant_find": {
+            "label": "找不到音量图标",
+            "next": "output_help"
+          }
+        }
+      },
+      "select_output": {
+        "type": "action",
+        "title": "切换到正确的输出设备",
+        "why": "把输出切回扬声器通常即可恢复。",
+        "instruction": "点击音量图标 → 点击音量滑块右侧的“>”箭头 → 在列表中选择“扬声器”（或你想用的设备），然后播放任意声音测试。",
+        "expected_observation": "声音从正确的设备播放出来。",
+        "risk_level": "reversible",
+        "rollback": "在同一列表中重新选择之前的设备即可。",
+        "stop_conditions": [],
+        "options": {
+          "worked": {
+            "label": "切换后有声音了",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "切换后还是没声音",
+            "next": "check_mixer",
+            "failed": true
+          },
+          "no_speaker_in_list": {
+            "label": "列表里没有扬声器",
+            "next": "check_service",
+            "failed": true
+          }
+        }
+      },
+      "output_help": {
+        "type": "explain",
+        "title": "从设置里打开声音输出",
+        "why": "任务栏图标可能被隐藏。",
+        "instruction": "按 Win + I → 系统 → 声音，在“输出”区域查看当前选择的设备。",
+        "expected_observation": "能在设置中看到输出设备列表。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "done": {
+            "label": "看到了，当前输出是扬声器",
+            "next": "check_mixer"
+          },
+          "still_cant": {
+            "label": "设置里也没有输出设备",
+            "next": "check_service"
+          }
+        }
+      },
+      "check_mixer": {
+        "type": "observe",
+        "title": "检查音量合成器是否单独静音",
+        "why": "某个应用可以被单独静音或音量调到 0。",
+        "instruction": "右键任务栏音量图标 → 打开音量合成器，确认“系统声音”和你正在用的应用都没有被静音、音量不为 0。",
+        "expected_observation": "所有滑块未被静音且有音量。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "was_muted": {
+            "label": "确实有静音，取消后有声音了",
+            "outcome": "resolved"
+          },
+          "all_fine": {
+            "label": "都没有静音",
+            "next": "check_service",
+            "failed": true
+          }
+        }
+      },
+      "check_service": {
+        "type": "action",
+        "title": "重启 Windows 音频服务",
+        "why": "音频服务异常时，设备列表可能为空或完全无声。",
+        "instruction": "按 Win + R，输入 services.msc 回车 → 找到“Windows Audio” → 右键 → 重新启动。然后回到音量图标处测试声音。",
+        "expected_observation": "服务重启成功，声音恢复或输出设备重新出现。",
+        "risk_level": "reversible",
+        "rollback": "该操作无需回退，服务会自动随系统运行。",
+        "stop_conditions": [
+          "服务列表打不开或提示没有权限"
+        ],
+        "options": {
+          "worked": {
+            "label": "重启服务后有声音了",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "还是没声音",
+            "next": "handoff_node",
+            "failed": true
+          },
+          "cant_run": {
+            "label": "打不开服务管理器",
+            "next": "handoff_node",
+            "failed": true
+          }
+        }
+      },
+      "handoff_node": {
+        "type": "handoff",
+        "title": "转人工检查驱动与硬件",
+        "why": "剩余可能（声卡驱动、硬件故障）需要现场确认，不适合远程指导。",
+        "instruction": "交接摘要会记录已确认的输出设备、服务状态与尝试结果。",
+        "expected_observation": "",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "to_handoff": {
+            "label": "转人工义诊",
+            "outcome": "handoff",
+            "reason": "音频自助排查流程已完成但问题仍存在"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+.env
+.env.*
+**/node_modules
+**/dist
+**/__pycache__
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.log
+.git
+artifacts
+**/uploads
+backups

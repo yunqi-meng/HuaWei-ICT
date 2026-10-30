@@ -1,0 +1,119 @@
+{
+  "key": "display-external-monitor",
+  "title": "外接显示器没有画面",
+  "category": "display",
+  "version_no": 1,
+  "reviewer": "开发演示内容；上线前需人工审核",
+  "symptom_keywords": [
+    "外接",
+    "显示器",
+    "投影",
+    "没画面",
+    "无信号",
+    "hdmi",
+    "第二块屏"
+  ],
+  "risk_keywords": [],
+  "source_refs": [
+    {
+      "title": "Microsoft 支持：连接外部显示器",
+      "url": "https://support.microsoft.com/zh-cn/windows"
+    }
+  ],
+  "graph": {
+    "entry": "check_connection",
+    "nodes": {
+      "check_connection": {
+        "type": "observe",
+        "title": "检查连接线与接口",
+        "why": "线材松动、接口插错（如插到主板上而非独显）是最常见原因。",
+        "instruction": "确认线缆两端都插紧；台式机请确认线插在独立显卡的接口上；笔记本确认转接头连接牢固。同时确认显示器已开机、输入源（HDMI/DP）选择正确。",
+        "expected_observation": "线缆连接牢固，显示器输入源与所插接口一致。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [
+          "接口或线材有明显破损、烧蚀痕迹"
+        ],
+        "options": {
+          "was_loose": {
+            "label": "重新插好后有画面了",
+            "outcome": "resolved"
+          },
+          "all_ok": {
+            "label": "连接没问题，还是没画面",
+            "next": "win_p"
+          },
+          "damaged": {
+            "label": "线材/接口有损坏痕迹",
+            "outcome": "handoff",
+            "reason": "接口或线材物理损坏，需要人工确认并更换"
+          }
+        }
+      },
+      "win_p": {
+        "type": "action",
+        "title": "切换投影模式",
+        "why": "系统可能处于“仅电脑屏幕”模式，外接屏被关闭。",
+        "instruction": "按 Win + P，在弹出的侧边栏中选择“复制”或“扩展”。",
+        "expected_observation": "外接显示器亮起并显示画面。",
+        "risk_level": "reversible",
+        "rollback": "再次按 Win + P 选回“仅电脑屏幕”。",
+        "stop_conditions": [],
+        "options": {
+          "worked": {
+            "label": "切换后有画面了",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "切换后还是没画面",
+            "next": "detect_display",
+            "failed": true
+          }
+        }
+      },
+      "detect_display": {
+        "type": "action",
+        "title": "让系统重新检测显示器",
+        "why": "系统有时未识别到新接入的显示器。",
+        "instruction": "按 Win + I → 系统 → 显示 → 点击“多显示器”区域的“检测”按钮。若检测到，选择“扩展这些显示器”。",
+        "expected_observation": "系统识别出外接显示器并显示画面。",
+        "risk_level": "reversible",
+        "rollback": "在同一页面将多显示器设置改回。",
+        "stop_conditions": [],
+        "options": {
+          "worked": {
+            "label": "检测后有画面了",
+            "outcome": "resolved"
+          },
+          "not_detected": {
+            "label": "检测不到显示器",
+            "next": "handoff_node",
+            "failed": true
+          },
+          "cant_find": {
+            "label": "找不到检测按钮",
+            "outcome": "handoff",
+            "reason": "用户无法定位显示设置，需要人工协助"
+          }
+        }
+      },
+      "handoff_node": {
+        "type": "handoff",
+        "title": "转人工检查",
+        "why": "可能涉及显卡驱动、接口硬件或显示器本身，需要现场交叉验证。",
+        "instruction": "交接摘要会记录连接方式与已尝试的系统设置。",
+        "expected_observation": "",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "to_handoff": {
+            "label": "转人工义诊",
+            "outcome": "handoff",
+            "reason": "外接显示自助排查流程已完成但问题仍存在"
+          }
+        }
+      }
+    }
+  }
+}

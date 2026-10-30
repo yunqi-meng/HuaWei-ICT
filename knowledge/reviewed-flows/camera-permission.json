@@ -1,0 +1,51 @@
+{
+  "key": "camera-permission",
+  "title": "摄像头权限检查",
+  "category": "app",
+  "version_no": 1,
+  "reviewer": "开发演示内容；上线前须人工审核",
+  "symptom_keywords": [
+    "摄像头打不开",
+    "摄像头权限",
+    "摄像头不能用"
+  ],
+  "risk_keywords": [],
+  "source_refs": [
+    {
+      "title": "Microsoft Support：摄像头权限检查",
+      "url": "https://support.microsoft.com/en-us/windows/privacy/windows-camera-microphone-and-privacy"
+    }
+  ],
+  "graph": {
+    "entry": "check",
+    "applicability": {
+      "os_family": "windows",
+      "os_version_range": "11"
+    },
+    "nodes": {
+      "check": {
+        "type": "action",
+        "title": "查看摄像头权限",
+        "why": "先验证基础环境，避免无依据地更改驱动或删除数据。",
+        "instruction": "打开 设置 → 隐私和安全性 → 摄像头，查看摄像头访问以及目标应用的权限。只为你信任且确实要使用摄像头的应用开启权限。",
+        "expected_observation": "确认目标应用获得权限后重新打开该应用，查看能否显示画面。",
+        "risk_level": "reversible",
+        "rollback": "可在同一页面关闭刚才开启的权限。",
+        "stop_conditions": [
+          "出现异常发热、破损、焦味，或设备受学校/单位策略管理"
+        ],
+        "options": {
+          "worked": {
+            "label": "验证后确认已恢复",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "仍未恢复或无法操作",
+            "outcome": "handoff",
+            "reason": "基础检查未恢复，需现场确认"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "key": "performance-startup-slow",
+  "title": "电脑开机很慢、越用越卡",
+  "category": "performance",
+  "version_no": 1,
+  "reviewer": "开发演示内容；上线前需人工审核",
+  "symptom_keywords": [
+    "开机慢",
+    "开机很慢",
+    "很卡",
+    "越来越卡",
+    "越用越卡",
+    "卡顿",
+    "变慢",
+    "很慢",
+    "启动慢",
+    "占用高",
+    "空间不足"
+  ],
+  "risk_keywords": [],
+  "source_refs": [
+    {
+      "title": "Microsoft 支持：提高电脑性能的提示",
+      "url": "https://support.microsoft.com/zh-cn/windows"
+    }
+  ],
+  "graph": {
+    "entry": "check_startup_apps",
+    "nodes": {
+      "check_startup_apps": {
+        "type": "observe",
+        "title": "查看开机启动项",
+        "why": "过多软件随开机自启是开机慢的首要常见原因。",
+        "instruction": "按 Ctrl + Shift + Esc 打开任务管理器 → 点击左侧“启动应用”，看看列表里有多少项、有多少标注“启动影响：高”。",
+        "expected_observation": "能看到启动应用列表及其启动影响。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "many_items": {
+            "label": "有很多启动项",
+            "next": "disable_startups"
+          },
+          "few_items": {
+            "label": "启动项很少",
+            "next": "check_storage"
+          }
+        }
+      },
+      "disable_startups": {
+        "type": "action",
+        "title": "禁用不必要的开机启动项",
+        "why": "禁用自启不卸载软件，需要时仍可正常打开。",
+        "instruction": "在“启动应用”列表中，对你不需要开机就运行的软件（如音乐、网盘、游戏平台）右键 → 禁用。不要禁用带有“音频”“触摸板”“Intel/NVIDIA/AMD 显卡”字样的条目和杀毒软件。",
+        "expected_observation": "选中条目状态变为“已禁用”。重启电脑感受开机速度变化。",
+        "risk_level": "reversible",
+        "rollback": "在同一列表右键该条目选择“启用”即可恢复。",
+        "stop_conditions": [],
+        "options": {
+          "worked": {
+            "label": "重启后明显变快了",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "还是慢",
+            "next": "check_storage",
+            "failed": true
+          },
+          "afraid": {
+            "label": "不确定哪些能禁用",
+            "outcome": "handoff",
+            "reason": "用户无法判断启动项，建议人工协助甄别"
+          }
+        }
+      },
+      "check_storage": {
+        "type": "observe",
+        "title": "检查系统盘剩余空间",
+        "why": "系统盘空间不足（低于 10%）会明显拖慢系统。",
+        "instruction": "打开文件资源管理器 → 此电脑，查看 C 盘剩余空间。",
+        "expected_observation": "能看到 C 盘可用容量。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "low_space": {
+            "label": "剩余不到 10% 或已标红",
+            "next": "cleanup_storage"
+          },
+          "space_ok": {
+            "label": "空间充足",
+            "next": "handoff_node",
+            "failed": true
+          }
+        }
+      },
+      "cleanup_storage": {
+        "type": "action",
+        "title": "清理临时文件并开启存储感知",
+        "why": "释放系统盘空间可直接改善卡顿。",
+        "instruction": "设置 → 系统 → 存储 → 打开“存储感知”开关 → 点击“临时文件”，勾选“临时文件”“回收站”（先确认回收站没有要恢复的文件）→ 删除文件。",
+        "expected_observation": "C 盘可用空间增加。",
+        "risk_level": "reversible",
+        "rollback": "存储感知可随时在同一页面关闭；已删除的回收站文件不可恢复（操作前已提示确认）。",
+        "stop_conditions": [
+          "临时文件列表中出现你不认识的大文件，先不要勾选"
+        ],
+        "options": {
+          "worked": {
+            "label": "清理后空间够用了，也变流畅了",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "清理后还是卡",
+            "next": "handoff_node",
+            "failed": true
+          }
+        }
+      },
+      "handoff_node": {
+        "type": "handoff",
+        "title": "转人工深入检查",
+        "why": "剩余可能（内存不足、机械硬盘老化、恶意软件）需要现场用专业工具确认。",
+        "instruction": "交接摘要会记录启动项数量、磁盘空间与已做清理。",
+        "expected_observation": "",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "to_handoff": {
+            "label": "转人工义诊",
+            "outcome": "handoff",
+            "reason": "性能自助排查流程已完成但问题仍存在，可能涉及硬件"
+          }
+        }
+      }
+    }
+  }
+}

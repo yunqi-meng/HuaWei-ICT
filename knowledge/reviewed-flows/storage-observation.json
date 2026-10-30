@@ -1,0 +1,48 @@
+{
+  "key": "storage-observation",
+  "title": "存储空间不足的只读检查",
+  "category": "performance",
+  "version_no": 1,
+  "reviewer": "开发演示内容；上线前须人工审核",
+  "symptom_keywords": [
+    "磁盘空间不足",
+    "c盘满了",
+    "c 盘满了",
+    "硬盘空间不够"
+  ],
+  "risk_keywords": [],
+  "source_refs": [
+    {
+      "title": "Microsoft Support：存储空间不足的只读检查",
+      "url": "https://support.microsoft.com/en-us/windows/experience/storage-filemanagement/free-up-drive-space-in-windows"
+    }
+  ],
+  "graph": {
+    "entry": "check",
+    "applicability": {
+      "os_family": "windows",
+      "os_version_range": "11"
+    },
+    "nodes": {
+      "check": {
+        "type": "observe",
+        "title": "查看磁盘剩余空间",
+        "why": "先验证基础环境，避免无依据地更改驱动或删除数据。",
+        "instruction": "打开 文件资源管理器 → 此电脑，记录系统盘剩余空间；再打开 设置 → 系统 → 存储，查看占用分类。本流程只查看，不删除文件或启用自动清理。",
+        "expected_observation": "能记录剩余空间与主要占用类别，并交给维修员确认适合的清理方式。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [
+          "出现异常发热、破损、焦味，或设备受学校/单位策略管理"
+        ],
+        "options": {
+          "recorded": {
+            "label": "已记录占用，请人工确认清理方式",
+            "outcome": "handoff",
+            "reason": "不自动删除用户文件，需核对备份和占用情况"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "key": "app-wont-open",
+  "title": "软件打不开或一打开就闪退",
+  "category": "app",
+  "version_no": 1,
+  "reviewer": "开发演示内容；上线前需人工审核",
+  "symptom_keywords": [
+    "打不开",
+    "闪退",
+    "双击没反应",
+    "崩溃",
+    "报错",
+    "启动失败"
+  ],
+  "risk_keywords": [],
+  "source_refs": [
+    {
+      "title": "Microsoft 支持：修复 Microsoft Store 应用问题",
+      "url": "https://support.microsoft.com/zh-cn/windows"
+    }
+  ],
+  "graph": {
+    "entry": "collect_error",
+    "nodes": {
+      "collect_error": {
+        "type": "question",
+        "title": "确认打开软件时的具体现象",
+        "why": "有无报错信息决定下一步排查方向。",
+        "instruction": "再打开一次这个软件，观察：是完全没反应、弹出报错窗口，还是窗口一闪就消失？如果有报错，请记下错误码或拍张截图。",
+        "expected_observation": "明确现象类型与（如有）报错内容。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "has_error": {
+            "label": "有报错窗口/错误码",
+            "next": "restart_app"
+          },
+          "flash_close": {
+            "label": "窗口一闪就关闭",
+            "next": "restart_app"
+          },
+          "no_response": {
+            "label": "双击完全没反应",
+            "next": "restart_app"
+          }
+        }
+      },
+      "restart_app": {
+        "type": "action",
+        "title": "彻底结束进程后重开",
+        "why": "后台残留的异常进程会阻止软件再次正常启动。",
+        "instruction": "按 Ctrl + Shift + Esc 打开任务管理器 → 在“进程”页找到该软件 → 右键 → 结束任务。然后重新打开软件。",
+        "expected_observation": "进程被结束，软件重新启动。",
+        "risk_level": "reversible",
+        "rollback": "该操作无需回退，软件可再次正常启动。",
+        "stop_conditions": [],
+        "options": {
+          "worked": {
+            "label": "重开后正常了",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "还是打不开/闪退",
+            "next": "check_compat",
+            "failed": true
+          }
+        }
+      },
+      "check_compat": {
+        "type": "observe",
+        "title": "确认软件与系统版本是否匹配",
+        "why": "过旧或过新的软件版本可能不支持当前系统。",
+        "instruction": "到该软件的官网查看其支持的系统版本（如“需要 Windows 10 及以上 / 需要 64 位系统”）。按 Win + I → 系统 → 关于，确认你的系统版本与系统类型（64 位/32 位）。",
+        "expected_observation": "确认软件要求与当前系统是否匹配。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "matched": {
+            "label": "版本匹配",
+            "next": "repair_app"
+          },
+          "not_matched": {
+            "label": "不匹配（版本太旧/太新）",
+            "outcome": "handoff",
+            "reason": "软件与系统版本不匹配，需要人工协助选择兼容版本"
+          },
+          "cant_tell": {
+            "label": "看不懂怎么核对",
+            "next": "repair_app"
+          }
+        }
+      },
+      "repair_app": {
+        "type": "action",
+        "title": "使用系统“修复”功能（不丢数据优先）",
+        "why": "系统自带的修复可修复损坏的应用文件，且先于“重置”（重置会清除应用数据）。",
+        "instruction": "设置 → 应用 → 已安装的应用 → 找到该软件 → 点“…”→ 高级选项 → 先点“修复”；修复无效再考虑“重置”（注意：重置会清除该应用的本地数据）。若没有“高级选项”，说明该软件不支持此方式。",
+        "expected_observation": "修复完成后软件可正常打开。",
+        "risk_level": "reversible",
+        "rollback": "“修复”无需回退；如已执行“重置”，应用数据不可恢复（操作前已提示）。",
+        "stop_conditions": [
+          "该软件含有未备份的重要本地数据，先不要点“重置”"
+        ],
+        "options": {
+          "worked": {
+            "label": "修复后能打开了",
+            "outcome": "resolved"
+          },
+          "still_fail": {
+            "label": "修复/重置后仍不行",
+            "next": "handoff_node",
+            "failed": true
+          },
+          "no_option": {
+            "label": "没有高级选项",
+            "next": "handoff_node",
+            "failed": true
+          }
+        }
+      },
+      "handoff_node": {
+        "type": "handoff",
+        "title": "转人工检查",
+        "why": "可能需要重装软件、检查运行库或分析崩溃日志，建议人工处理。",
+        "instruction": "交接摘要会带上你记录的报错信息与已尝试步骤，请把报错截图一并带到服务点。",
+        "expected_observation": "",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
+        "options": {
+          "to_handoff": {
+            "label": "转人工义诊",
+            "outcome": "handoff",
+            "reason": "应用故障自助排查流程已完成但问题仍存在"
+          }
+        }
+      }
+    }
+  }
+}
