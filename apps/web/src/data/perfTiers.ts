@@ -245,9 +245,118 @@ export const GPU_MOBILE_TIERS: TierLevel[] = [
   ]},
 ];
 
-export function getTiers(platform: "desktop" | "mobile", component: "cpu" | "gpu"): TierLevel[] {
-  if (platform === "desktop" && component === "cpu") return CPU_DESKTOP_TIERS;
-  if (platform === "desktop" && component === "gpu") return GPU_DESKTOP_TIERS;
-  if (platform === "mobile" && component === "cpu") return CPU_MOBILE_TIERS;
-  return GPU_MOBILE_TIERS;
+// ====================== CPU 手机端 ======================
+// 来源: cpuranklist.com 极客湾手机CPU天梯
+export const CPU_PHONE_TIERS: TierLevel[] = [
+  { label: "顶级旗舰", ratio: "400+", items: [
+    { name: "Apple M4", score: 1000, brand: "Apple" },
+    { name: "Snapdragon 8 Elite Gen 5", score: 900, brand: "Qualcomm" },
+    { name: "Dimensity 9500", score: 880, brand: "MediaTek" },
+    { name: "A19 Pro", score: 854, brand: "Apple" },
+    { name: "A19", score: 764, brand: "Apple" },
+    { name: "Apple M2", score: 740, brand: "Apple" },
+    { name: "Snapdragon 8 Elite", score: 737, brand: "Qualcomm" },
+    { name: "Xring O1", score: 713, brand: "Xiaomi" },
+  ]},
+  { label: "旗舰", ratio: "250-400", items: [
+    { name: "Dimensity 9400", score: 711, brand: "MediaTek" },
+    { name: "Snapdragon 8 Gen 5", score: 701, brand: "Qualcomm" },
+    { name: "A18 Pro", score: 665, brand: "Apple" },
+    { name: "Dimensity 9300", score: 639, brand: "MediaTek" },
+    { name: "A18", score: 624, brand: "Apple" },
+    { name: "Snapdragon 8 Gen 3", score: 607, brand: "Qualcomm" },
+    { name: "Apple M1", score: 599, brand: "Apple" },
+  ]},
+  { label: "高端", ratio: "180-250", items: [
+    { name: "A17 Pro", score: 557, brand: "Apple" },
+    { name: "Exynos 2400", score: 515, brand: "Samsung" },
+    { name: "Dimensity 8400-MAX", score: 504, brand: "MediaTek" },
+    { name: "Snapdragon 8 Gen 2", score: 472, brand: "Qualcomm" },
+    { name: "A16", score: 461, brand: "Apple" },
+    { name: "Dimensity 9200+", score: 457, brand: "MediaTek" },
+    { name: "Dimensity 9200", score: 429, brand: "MediaTek" },
+  ]},
+  { label: "中高端", ratio: "120-180", items: [
+    { name: "Snapdragon 8s Gen3", score: 414, brand: "Qualcomm" },
+    { name: "Snapdragon 7+ Gen3", score: 410, brand: "Qualcomm" },
+    { name: "A15", score: 404, brand: "Apple" },
+    { name: "Snapdragon 8+ Gen1", score: 361, brand: "Qualcomm" },
+    { name: "Dimensity 9000", score: 358, brand: "MediaTek" },
+    { name: "Kirin 9020", score: 333, brand: "Huawei" },
+    { name: "A14", score: 331, brand: "Apple" },
+    { name: "Tensor G4", score: 330, brand: "Google" },
+  ]},
+  { label: "主流", ratio: "80-120", items: [
+    { name: "Dimensity 8300", score: 295, brand: "MediaTek" },
+    { name: "Snapdragon 7 Gen 3", score: 280, brand: "Qualcomm" },
+    { name: "A13", score: 270, brand: "Apple" },
+    { name: "Exynos 2200", score: 260, brand: "Samsung" },
+    { name: "Dimensity 8200", score: 255, brand: "MediaTek" },
+    { name: "Snapdragon 7s Gen 3", score: 245, brand: "Qualcomm" },
+    { name: "Kirin 9010", score: 235, brand: "Huawei" },
+    { name: "Tensor G3", score: 230, brand: "Google" },
+  ]},
+  { label: "入门", ratio: "40-80", items: [
+    { name: "A12", score: 185, brand: "Apple" },
+    { name: "Snapdragon 6 Gen 1", score: 175, brand: "Qualcomm" },
+    { name: "Dimensity 7200", score: 165, brand: "MediaTek" },
+    { name: "Snapdragon 778G", score: 158, brand: "Qualcomm" },
+    { name: "Dimensity 1080", score: 140, brand: "MediaTek" },
+    { name: "Kirin 8000", score: 130, brand: "Huawei" },
+    { name: "Exynos 1380", score: 125, brand: "Samsung" },
+    { name: "Snapdragon 695", score: 110, brand: "Qualcomm" },
+  ]},
+];
+
+// ====================== GPU 手机端 ======================
+export const GPU_PHONE_TIERS: TierLevel[] = [
+  { label: "顶级旗舰", ratio: "300+", items: [
+    { name: "Apple M4 GPU", score: 1000, brand: "Apple" },
+    { name: "Snapdragon 8 Elite Gen 5 GPU", score: 920, brand: "Qualcomm" },
+    { name: "Dimensity 9500 GPU", score: 880, brand: "MediaTek" },
+    { name: "A19 Pro GPU", score: 860, brand: "Apple" },
+    { name: "Adreno 830 (8 Elite)", score: 820, brand: "Qualcomm" },
+  ]},
+  { label: "旗舰", ratio: "200-300", items: [
+    { name: "Immortalis-G925 (9400)", score: 750, brand: "MediaTek" },
+    { name: "A18 Pro GPU", score: 720, brand: "Apple" },
+    { name: "A19 GPU", score: 700, brand: "Apple" },
+    { name: "Apple M2 GPU", score: 680, brand: "Apple" },
+    { name: "Adreno 750 (8 Gen 3)", score: 640, brand: "Qualcomm" },
+  ]},
+  { label: "高端", ratio: "150-200", items: [
+    { name: "Immortalis-G720 (9300)", score: 560, brand: "MediaTek" },
+    { name: "A17 Pro GPU", score: 540, brand: "Apple" },
+    { name: "Adreno 740 (8 Gen 2)", score: 500, brand: "Qualcomm" },
+    { name: "Xclipse 940 (Exynos 2400)", score: 470, brand: "Samsung" },
+    { name: "A16 GPU", score: 450, brand: "Apple" },
+  ]},
+  { label: "中高端", ratio: "100-150", items: [
+    { name: "Adreno 735 (8s Gen3)", score: 400, brand: "Qualcomm" },
+    { name: "Immortalis-G615 (8300)", score: 380, brand: "MediaTek" },
+    { name: "A15 GPU", score: 370, brand: "Apple" },
+    { name: "Adreno 730 (8+ Gen1)", score: 340, brand: "Qualcomm" },
+    { name: "Mali-G715 (9200)", score: 320, brand: "MediaTek" },
+  ]},
+  { label: "主流", ratio: "60-100", items: [
+    { name: "A14 GPU", score: 250, brand: "Apple" },
+    { name: "Adreno 644 (7 Gen 1)", score: 230, brand: "Qualcomm" },
+    { name: "Mali-G610 (8100)", score: 215, brand: "MediaTek" },
+    { name: "Xclipse 920 (Exynos 2200)", score: 200, brand: "Samsung" },
+    { name: "A13 GPU", score: 190, brand: "Apple" },
+  ]},
+  { label: "入门", ratio: "30-60", items: [
+    { name: "Adreno 619 (695)", score: 120, brand: "Qualcomm" },
+    { name: "Mali-G57 (1080)", score: 110, brand: "MediaTek" },
+    { name: "Adreno 642 (778G)", score: 105, brand: "Qualcomm" },
+    { name: "A12 GPU", score: 95, brand: "Apple" },
+    { name: "Mali-G57 (810)", score: 80, brand: "MediaTek" },
+    { name: "Adreno 610 (680)", score: 55, brand: "Qualcomm" },
+  ]},
+];
+
+export function getTiers(platform: "desktop" | "mobile" | "phone", component: "cpu" | "gpu"): TierLevel[] {
+  if (platform === "phone") return component === "cpu" ? CPU_PHONE_TIERS : GPU_PHONE_TIERS;
+  if (platform === "desktop") return component === "cpu" ? CPU_DESKTOP_TIERS : GPU_DESKTOP_TIERS;
+  return component === "cpu" ? CPU_MOBILE_TIERS : GPU_MOBILE_TIERS;
 }

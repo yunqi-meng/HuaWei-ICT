@@ -34,8 +34,8 @@ function ScoreBar({ score, maxScore }: { score: number; maxScore: number }) {
 export default function PerformanceCompare() {
   const [params, setParams] = useSearchParams();
   const location = useLocation();
-  const pathPlatform = location.pathname.includes("mobile") ? "mobile" : location.pathname.includes("desktop") ? "desktop" : "";
-  const platform = (params.get("platform") || pathPlatform || "desktop") as "desktop" | "mobile";
+  const pathPlatform = location.pathname.includes("phone") ? "phone" : location.pathname.includes("mobile") ? "mobile" : location.pathname.includes("desktop") ? "desktop" : "";
+  const platform = (params.get("platform") || pathPlatform || "desktop") as "desktop" | "mobile" | "phone";
   const component = (params.get("component") || "cpu") as "cpu" | "gpu";
   const [search, setSearch] = useState("");
 
@@ -81,16 +81,20 @@ export default function PerformanceCompare() {
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
         {/* 平台切换 */}
         <div style={{ display: "flex", background: "#f0f2f5", borderRadius: 12, padding: 4 }}>
-          {(["desktop", "mobile"] as const).map(p => (
-            <button key={p} onClick={() => setPlatform(p)} style={{
-              padding: "10px 28px", borderRadius: 9, border: "none", cursor: "pointer",
+          {([
+            { key: "desktop" as const, label: "🖥️ 桌面端" },
+            { key: "mobile" as const, label: "💻 笔记本" },
+            { key: "phone" as const, label: "📱 手机端" },
+          ]).map(p => (
+            <button key={p.key} onClick={() => setPlatform(p.key)} style={{
+              padding: "10px 24px", borderRadius: 9, border: "none", cursor: "pointer",
               fontSize: 15, fontWeight: 600,
-              background: platform === p ? "#fff" : "transparent",
-              color: platform === p ? "#333" : "#888",
-              boxShadow: platform === p ? "0 2px 8px rgba(0,0,0,0.08)" : "none",
+              background: platform === p.key ? "#fff" : "transparent",
+              color: platform === p.key ? "#333" : "#888",
+              boxShadow: platform === p.key ? "0 2px 8px rgba(0,0,0,0.08)" : "none",
               transition: "all 0.2s",
             }}>
-              {p === "desktop" ? "🖥️ 桌面端" : "📱 移动端"}
+              {p.label}
             </button>
           ))}
         </div>

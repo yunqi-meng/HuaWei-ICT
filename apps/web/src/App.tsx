@@ -72,6 +72,7 @@ export default function App() {
           <Route path="/perf" element={<PerformanceCompare />} />
           <Route path="/perf/desktop" element={<PerformanceCompare />} />
           <Route path="/perf/mobile" element={<PerformanceCompare />} />
+          <Route path="/perf/phone" element={<PerformanceCompare />} />
           <Route path="/quality" element={<BuildQuality />} />
           <Route path="/quality/desktop" element={<BuildQuality />} />
           <Route path="/quality/mobile" element={<BuildQuality />} />

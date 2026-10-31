@@ -172,9 +172,9 @@ export default function BuildQuality() {
     ? (category === "mb" ? DESKTOP_MB : DESKTOP_GPU)
     : LAPTOPS;
 
-  const setParam = (key: string, value: string) => {
+  const setParams2 = (updates: Record<string, string>) => {
     const next = new URLSearchParams(params);
-    next.set(key, value);
+    Object.entries(updates).forEach(([k, v]) => next.set(k, v));
     setParams(next);
   };
 
@@ -187,7 +187,7 @@ export default function BuildQuality() {
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
         <div style={{ display: "flex", background: "#f0f2f5", borderRadius: 12, padding: 4 }}>
           {(["desktop", "mobile"] as const).map(p => (
-            <button key={p} onClick={() => { setParam("platform", p); setParam("category", p === "desktop" ? "mb" : "laptop"); }} style={{
+            <button key={p} onClick={() => setParams2({ platform: p, category: p === "desktop" ? "mb" : "laptop" })} style={{
               padding: "10px 28px", borderRadius: 9, border: "none", cursor: "pointer",
               fontSize: 15, fontWeight: 600,
               background: platform === p ? "#fff" : "transparent",
@@ -205,7 +205,7 @@ export default function BuildQuality() {
               { key: "mb", label: "🔧 主板" },
               { key: "gpu", label: "🎮 显卡" },
             ]).map(c => (
-              <button key={c.key} onClick={() => setParam("category", c.key)} style={{
+              <button key={c.key} onClick={() => setParams2({ category: c.key })} style={{
                 padding: "10px 28px", borderRadius: 9, border: "none", cursor: "pointer",
                 fontSize: 15, fontWeight: 600,
                 background: category === c.key ? "#fff" : "transparent",
