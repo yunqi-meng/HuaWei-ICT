@@ -35,13 +35,18 @@ const CARDS = [
 
 export default function Home() {
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+    <div style={{
+      maxWidth: 1100, margin: "0 auto",
+      background: "linear-gradient(160deg, #fff5eb 0%, #ffe8d1 30%, #ffd4a8 60%, #ffb366 100%)",
+      borderRadius: 20, padding: "10px 0 20px", marginTop: 10,
+    }}>
       {/* Hero 区域 */}
       <div style={{ textAlign: "center", padding: "60px 20px 40px" }}>
-        <h1 style={{ fontSize: 42, fontWeight: 800, marginBottom: 12, color: "#1a1a2e" }}>
+        <div style={{ fontSize: 56, marginBottom: 12 }}>🍊</div>
+        <h1 style={{ fontSize: 42, fontWeight: 800, marginBottom: 12, color: "#c2410c" }}>
           知修 · 电脑义诊
         </h1>
-        <p style={{ fontSize: 18, color: "#666", maxWidth: 520, margin: "0 auto" }}>
+        <p style={{ fontSize: 18, color: "#9a3412", maxWidth: 520, margin: "0 auto" }}>
           电脑问题一站式服务平台 —— 智能诊断、性能天梯、硬件做工，帮你解决所有电脑难题
         </p>
       </div>
@@ -111,14 +116,15 @@ export default function Home() {
 
       {/* 底部快捷方式 */}
       <div style={{
-        background: "#f8f9fb",
+        background: "rgba(255,255,255,0.6)",
         borderRadius: 16,
         padding: "28px 32px",
-        margin: "0 20px 60px",
+        margin: "0 20px 40px",
         display: "flex",
         justifyContent: "center",
         gap: 32,
         flexWrap: "wrap",
+        backdropFilter: "blur(8px)",
       }}>
         {[
           { to: "/guides", icon: "📖", label: "问题指南" },
@@ -128,7 +134,7 @@ export default function Home() {
         ].map(item => (
           <Link key={item.to} to={item.to} style={{
             display: "flex", alignItems: "center", gap: 8,
-            color: "#555", textDecoration: "none", fontSize: 14,
+            color: "#c2410c", textDecoration: "none", fontSize: 14, fontWeight: 500,
           }}>
             <span style={{ fontSize: 20 }}>{item.icon}</span>
             {item.label}
