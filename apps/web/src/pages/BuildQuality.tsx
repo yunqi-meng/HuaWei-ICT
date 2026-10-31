@@ -4,88 +4,89 @@ import { useSearchParams, useLocation } from "react-router-dom";
 interface QualityItem {
   name: string;
   brand: string;
-  score: number; // 1-10
-  vrm: string;       // 供电/散热
-  pcb: string;       // 用料/做工
-  cooling: string;   // 散热设计
-  warranty: string;  // 售后
+  score: number;
+  image: string;
+  vrm: string;
+  pcb: string;
+  cooling: string;
+  warranty: string;
   pros: string[];
   cons: string[];
   price: string;
 }
 
 const DESKTOP_MB: QualityItem[] = [
-  { name: "ROG MAXIMUS Z890 EXTREME", brand: "ROG/ASUS", score: 9.5,
+  { name: "ROG MAXIMUS Z890 EXTREME", brand: "ROG/ASUS", score: 9.5, image: "/images/products/mb-rog-maximus.jpg",
     vrm: "24+1+2 相 110A DrMOS", pcb: "8 层 PCB、服务器级用料",
     cooling: "全覆盖 VRM 散热装甲 + 风扇", warranty: "3 年换新",
     pros: ["供电顶级", "扩展接口丰富", "BIOS 超频功能强"], cons: ["价格极高"], price: "¥8999+" },
-  { name: "MPG Z890 CARBON WIFI", brand: "MSI", score: 8.8,
+  { name: "MPG Z890 CARBON WIFI", brand: "MSI", score: 8.8, image: "/images/products/mb-msi-carbon.jpg",
     vrm: "18+1+1 相 90A", pcb: "6 层 PCB、7W/mK 散热垫",
     cooling: "扩展散热片 + 热管", warranty: "3 年质保",
     pros: ["性价比高端", "M.2 散热好", "灯效同步"], cons: ["BIOS 功能略复杂"], price: "¥2999" },
-  { name: "Z890 AORUS MASTER", brand: "GIGABYTE", score: 8.5,
+  { name: "Z890 AORUS MASTER", brand: "GIGABYTE", score: 8.5, image: "/images/products/mb-gigabyte-aorus.jpg",
     vrm: "18+1+2 相 100A", pcb: "8 层 PCB",
     cooling: "Fins-Array 散热 + 热管", warranty: "4 年质保",
     pros: ["供电用料好", "4 年质保", "雷电4 接口"], cons: ["BIOS 体验一般"], price: "¥3299" },
-  { name: "TUF GAMING Z890-PLUS", brand: "ASUS", score: 7.8,
+  { name: "TUF GAMING Z890-PLUS", brand: "ASUS", score: 7.8, image: "/images/products/mb-tuf-gaming.jpg",
     vrm: "16+1+1 相 80A", pcb: "6 层 PCB、军规认证",
     cooling: "VRM 散热片", warranty: "3 年质保",
     pros: ["耐用稳定", "价格合理", "接口够用"], cons: ["超频能力有限"], price: "¥1799" },
-  { name: "B850M MORTAR WIFI", brand: "MSI", score: 7.5,
+  { name: "B850M MORTAR WIFI", brand: "MSI", score: 7.5, image: "/images/products/mb-msi-carbon.jpg",
     vrm: "12+2+1 相 80A", pcb: "6 层 PCB",
     cooling: "M.2 Shield Frozr", warranty: "3 年质保",
     pros: ["MATX 小板首选", "供电不错", "性价比高"], cons: ["扩展性有限"], price: "¥1299" },
-  { name: "B760M-AYW WIFI", brand: "ASUS", score: 6.8,
+  { name: "B760M-AYW WIFI", brand: "ASUS", score: 6.8, image: "/images/products/mb-tuf-gaming.jpg",
     vrm: "10+1 相 50A", pcb: "4 层 PCB",
     cooling: "基础散热片", warranty: "3 年质保",
     pros: ["入门首选", "便宜够用"], cons: ["供电一般", "扩展少"], price: "¥799" },
 ];
 
 const DESKTOP_GPU: QualityItem[] = [
-  { name: "ROG STRIX RTX 5090 O32G", brand: "ROG/ASUS", score: 9.6,
+  { name: "ROG STRIX RTX 5090 O32G", brand: "ROG/ASUS", score: 9.6, image: "/images/products/gpu-rog-strix.jpg",
     vrm: "24+4 相供电", pcb: "自动制程 PCB、航天级用料",
     cooling: "轴流风扇 + 均热板 + 相变硅脂", warranty: "3 年质保",
     pros: ["散热顶级", "供电豪华", "静音好"], cons: ["价格昂贵", "体积巨大"], price: "¥19999+" },
-  { name: "RTX 5090 FE (公版)", brand: "NVIDIA", score: 9.0,
+  { name: "RTX 5090 FE (公版)", brand: "NVIDIA", score: 9.0, image: "/images/products/gpu-nvidia-fe.jpg",
     vrm: "高密度供电", pcb: "紧凑 PCB 设计",
     cooling: "双相变均热板 + 涡轮", warranty: "3 年质保",
     pros: ["做工精致", "体积小", "散热创新"], cons: ["难买到", "拆解不便"], price: "¥16499" },
-  { name: "RTX 5080 SUPRIM LIQUID", brand: "MSI", score: 9.2,
+  { name: "RTX 5080 SUPRIM LIQUID", brand: "MSI", score: 9.2, image: "/images/products/gpu-msi-suprim.jpg",
     vrm: "16+4 相", pcb: "高规格 PCB",
     cooling: "360mm 一体水冷", warranty: "3 年质保",
     pros: ["水冷散热极致", "温度极低", "性能释放充分"], cons: ["安装占空间", "价格高"], price: "¥9999" },
-  { name: "RX 7900 XTX NITRO+", brand: "SAPPHIRE", score: 8.5,
+  { name: "RX 7900 XTX NITRO+", brand: "SAPPHIRE", score: 8.5, image: "/images/products/gpu-sapphire-nitro.jpg",
     vrm: "17 相供电", pcb: "高规格 PCB",
     cooling: "Tri-X 三风扇 + 热管", warranty: "3 年质保",
     pros: ["AMD 旗舰做工", "散热优秀", "接口丰富"], cons: ["功耗较高"], price: "¥7599" },
-  { name: "RTX 4070 SUPER 旗舰", brand: "各AIB", score: 7.8,
+  { name: "RTX 4070 SUPER 旗舰", brand: "各AIB", score: 7.8, image: "/images/products/gpu-rtx4070s.jpg",
     vrm: "12-14 相", pcb: "6 层 PCB",
     cooling: "三风扇散热", warranty: "3 年质保",
     pros: ["主流甜品", "散热够用", "功耗低"], cons: ["用料不如旗舰"], price: "¥4599" },
 ];
 
 const LAPTOPS: QualityItem[] = [
-  { name: "MacBook Pro 16 M4 Max", brand: "Apple", score: 9.5,
+  { name: "MacBook Pro 16 M4 Max", brand: "Apple", score: 9.5, image: "/images/products/laptop-macbook.jpg",
     vrm: "统一内存架构", pcb: "高集成度主板",
     cooling: "均热板 + 双风扇", warranty: "1 年(可延保)",
     pros: ["做工顶级", "屏幕极佳", "续航超长", "性能强"], cons: ["价格极高", "扩展性差"], price: "¥25999+" },
-  { name: "ROG 幻16 Air", brand: "ASUS", score: 8.8,
+  { name: "ROG 幻16 Air", brand: "ASUS", score: 8.8, image: "/images/products/laptop-rog-zephyrus.jpg",
     vrm: "高性能供电模组", pcb: "紧凑高密度",
     cooling: "液金导热 + 三风扇", warranty: "2 年质保",
     pros: ["轻薄高性能", "屏幕好", "散热优秀"], cons: ["高负载噪音较大"], price: "¥12999" },
-  { name: "ThinkPad X1 Carbon", brand: "Lenovo", score: 8.5,
+  { name: "ThinkPad X1 Carbon", brand: "Lenovo", score: 8.5, image: "/images/products/laptop-thinkpad.jpg",
     vrm: "商务级供电", pcb: "碳纤维材质",
     cooling: "双风扇 + 热管", warranty: "3 年质保",
     pros: ["键盘手感极佳", "轻薄耐用", "接口齐全", "商务品质"], cons: ["性能释放保守"], price: "¥10999" },
-  { name: "MateBook X Pro", brand: "HUAWEI", score: 8.3,
+  { name: "MateBook X Pro", brand: "HUAWEI", score: 8.3, image: "/images/products/laptop-matebook.jpg",
     vrm: "高效供电", pcb: "镁合金机身",
     cooling: "鲨鱼鳍风扇", warranty: "2 年质保",
     pros: ["屏幕顶级", "做工精致", "触控板好"], cons: ["接口较少"], price: "¥9999" },
-  { name: "拯救者 Y9000P", brand: "Lenovo", score: 8.0,
+  { name: "拯救者 Y9000P", brand: "Lenovo", score: 8.0, image: "/images/products/laptop-legion.jpg",
     vrm: "高性能供电", pcb: "标准主板",
     cooling: "霜刃散热系统 5.0", warranty: "2 年质保",
     pros: ["性能释放激进", "性价比高", "散热好"], cons: ["较重", "续航一般"], price: "¥8999" },
-  { name: "RedmiBook Pro 15", brand: "Xiaomi", score: 7.2,
+  { name: "RedmiBook Pro 15", brand: "Xiaomi", score: 7.2, image: "/images/products/laptop-redmibook.jpg",
     vrm: "标准供电", pcb: "金属机身",
     cooling: "双风扇", warranty: "2 年质保",
     pros: ["性价比高", "屏幕不错", "做工对得起价格"], cons: ["品牌溢价低", "售后网点少"], price: "¥4599" },
@@ -113,28 +114,49 @@ function QualityCard({ item }: { item: QualityItem }) {
   return (
     <div className="card" style={{ marginBottom: 12, cursor: "pointer" }}
       onClick={() => setExpanded(!expanded)}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 12 }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 600, fontSize: 16 }}>{item.name}</div>
-          <div className="muted small" style={{ marginTop: 2 }}>{item.brand} · {item.price}</div>
+      <div style={{ display: "flex", gap: 16, alignItems: "start" }}>
+        {/* 产品图 */}
+        <div style={{
+          width: 120, height: 90, borderRadius: 10, overflow: "hidden",
+          flexShrink: 0, background: "#f0f0f0", border: "1px solid #e8e8e8",
+        }}>
+          <img
+            src={item.image}
+            alt={item.name}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            onError={e => {
+              (e.target as HTMLImageElement).style.display = "none";
+              (e.target as HTMLImageElement).parentElement!.innerHTML =
+                '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px">📦</div>';
+            }}
+          />
         </div>
-        <ScoreBadge score={item.score} />
-      </div>
-
-      {/* 评分进度条 */}
-      <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
-        {["vrm", "pcb", "cooling", "warranty"].map(key => {
-          const label = key === "vrm" ? "供电" : key === "pcb" ? "用料" : key === "cooling" ? "散热" : "售后";
-          return (
-            <div key={key} style={{ flex: 1, textAlign: "center" }}>
-              <div style={{ fontSize: 11, color: "#888" }}>{label}</div>
-              <div style={{
-                height: 4, borderRadius: 2, marginTop: 4,
-                background: `linear-gradient(90deg, #667eea ${item.score * 10}%, #e8e8e8 ${item.score * 10}%)`,
-              }} />
+        {/* 信息 */}
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 12 }}>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 16 }}>{item.name}</div>
+              <div className="muted small" style={{ marginTop: 2 }}>{item.brand} · {item.price}</div>
             </div>
-          );
-        })}
+            <ScoreBadge score={item.score} />
+          </div>
+
+          {/* 评分进度条 */}
+          <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
+            {["vrm", "pcb", "cooling", "warranty"].map(key => {
+              const label = key === "vrm" ? "供电" : key === "pcb" ? "用料" : key === "cooling" ? "散热" : "售后";
+              return (
+                <div key={key} style={{ flex: 1, textAlign: "center" }}>
+                  <div style={{ fontSize: 11, color: "#888" }}>{label}</div>
+                  <div style={{
+                    height: 4, borderRadius: 2, marginTop: 4,
+                    background: `linear-gradient(90deg, #667eea ${item.score * 10}%, #e8e8e8 ${item.score * 10}%)`,
+                  }} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {expanded && (
