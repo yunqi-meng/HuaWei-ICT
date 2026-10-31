@@ -18,13 +18,23 @@ import SchedulingAdmin from "./pages/SchedulingAdmin";
 import KnowledgeAdmin from "./pages/KnowledgeAdmin";
 import SystemAdmin from "./pages/SystemAdmin";
 import Account from "./pages/Account";
+import HardwareRankings from "./pages/HardwareRankings";
+import HardwareDatabase from "./pages/HardwareDatabase";
+import HardwareCompare from "./pages/HardwareCompare";
+import HardwareDetail from "./pages/HardwareDetail";
+import ProblemHelp from "./pages/ProblemHelp";
+import PerformanceCompare from "./pages/PerformanceCompare";
+import BuildQuality from "./pages/BuildQuality";
 
 function TopNav() {
   const { me, logout, hasRole } = useAuth();
   return (
     <nav className="topnav">
       <Link className="brand" to="/">知修</Link>
-      <Link to="/guides">问题指南</Link>
+      <Link to="/help">🔧 问题求助</Link>
+      <Link to="/perf">📊 性能对比</Link>
+      <Link to="/quality">🔨 做工对比</Link>
+      <Link to="/guides" className="small">指南</Link>
       {me && <Link to="/my/tickets">我的服务</Link>}
       {me && <Link to="/my/devices">我的设备</Link>}
       {me && <Link to="/notifications">通知</Link>}
@@ -57,8 +67,20 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/help" element={<ProblemHelp />} />
+          <Route path="/help/booking" element={<NewAppointment />} />
+          <Route path="/perf" element={<PerformanceCompare />} />
+          <Route path="/perf/desktop" element={<PerformanceCompare />} />
+          <Route path="/perf/mobile" element={<PerformanceCompare />} />
+          <Route path="/quality" element={<BuildQuality />} />
+          <Route path="/quality/desktop" element={<BuildQuality />} />
+          <Route path="/quality/mobile" element={<BuildQuality />} />
           <Route path="/guides" element={<Guides />} />
           <Route path="/guides/:id" element={<GuideDetail />} />
+          <Route path="/hardware" element={<HardwareDatabase />} />
+          <Route path="/hardware/rankings" element={<HardwareRankings />} />
+          <Route path="/hardware/compare" element={<HardwareCompare />} />
+          <Route path="/hardware/:id" element={<HardwareDetail />} />
           <Route path="/diagnosis/:id" element={<Diagnosis />} />
           <Route path="/appointments/new" element={<NewAppointment />} />
           <Route path="/my/tickets" element={<MyTickets />} />
