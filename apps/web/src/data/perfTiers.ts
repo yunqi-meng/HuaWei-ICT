@@ -1,9 +1,12 @@
 /** 性能天梯图数据 — 来源: CPU Benchmark 6.092 / GPU Benchmark 9.115 */
 
+export interface EffPoint { power: number; score: number; }
+
 export interface TierItem {
   name: string;
   score: number; // 归一化性能分 (以当前旗舰=1000为基准)
   brand: string;
+  eff?: EffPoint[]; // 能效曲线数据点
 }
 
 export interface TierLevel {
@@ -15,30 +18,30 @@ export interface TierLevel {
 // ====================== CPU 桌面端 ======================
 export const CPU_DESKTOP_TIERS: TierLevel[] = [
   { label: "顶级旗舰", ratio: "400x+", items: [
-    { name: "Ryzen 9 9950X", score: 1000, brand: "AMD" },
-    { name: "Core Ultra 9 285K", score: 985, brand: "Intel" },
-    { name: "Ryzen 9 9900X", score: 920, brand: "AMD" },
-    { name: "Core i9-14900K", score: 900, brand: "Intel" },
-    { name: "Core i9-13900K", score: 870, brand: "Intel" },
+    { name: "Ryzen 9 9950X", score: 1000, brand: "AMD", eff: [{power:45,score:280},{power:90,score:520},{power:140,score:720},{power:170,score:860},{power:200,score:940}] },
+    { name: "Core Ultra 9 285K", score: 985, brand: "Intel", eff: [{power:30,score:300},{power:65,score:500},{power:95,score:680},{power:125,score:820},{power:150,score:920}] },
+    { name: "Ryzen 9 9900X", score: 920, brand: "AMD", eff: [{power:40,score:270},{power:80,score:500},{power:120,score:700},{power:150,score:820}] },
+    { name: "Core i9-14900K", score: 900, brand: "Intel", eff: [{power:40,score:280},{power:80,score:490},{power:125,score:700},{power:190,score:850},{power:253,score:890}] },
+    { name: "Core i9-13900K", score: 870, brand: "Intel", eff: [{power:40,score:260},{power:80,score:470},{power:125,score:670},{power:180,score:810}] },
   ]},
   { label: "高端", ratio: "200-400x", items: [
-    { name: "Core Ultra 7 265K", score: 830, brand: "Intel" },
-    { name: "Ryzen 7 9700X", score: 800, brand: "AMD" },
-    { name: "Core i7-14700K", score: 780, brand: "Intel" },
-    { name: "Core i7-13700K", score: 750, brand: "Intel" },
-    { name: "Ryzen 7 7800X3D", score: 740, brand: "AMD" },
-    { name: "Core i9-12900K", score: 720, brand: "Intel" },
-    { name: "Ryzen 9 7900X", score: 710, brand: "AMD" },
+    { name: "Core Ultra 7 265K", score: 830, brand: "Intel", eff: [{power:30,score:260},{power:65,score:460},{power:95,score:620},{power:125,score:750}] },
+    { name: "Ryzen 7 9700X", score: 800, brand: "AMD", eff: [{power:25,score:250},{power:45,score:420},{power:65,score:580},{power:88,score:720}] },
+    { name: "Core i7-14700K", score: 780, brand: "Intel", eff: [{power:35,score:240},{power:70,score:420},{power:125,score:640},{power:190,score:760}] },
+    { name: "Core i7-13700K", score: 750, brand: "Intel", eff: [{power:35,score:230},{power:70,score:400},{power:125,score:610}] },
+    { name: "Ryzen 7 7800X3D", score: 740, brand: "AMD", eff: [{power:25,score:240},{power:50,score:420},{power:75,score:580},{power:120,score:700}] },
+    { name: "Core i9-12900K", score: 720, brand: "Intel", eff: [{power:40,score:220},{power:80,score:400},{power:125,score:590},{power:190,score:700}] },
+    { name: "Ryzen 9 7900X", score: 710, brand: "AMD", eff: [{power:35,score:230},{power:70,score:420},{power:105,score:580},{power:140,score:680}] },
   ]},
   { label: "中高端", ratio: "100-200x", items: [
-    { name: "Core Ultra 5 245K", score: 650, brand: "Intel" },
-    { name: "Ryzen 5 9600X", score: 630, brand: "AMD" },
-    { name: "Core i5-14600K", score: 610, brand: "Intel" },
-    { name: "Ryzen 7 7700X", score: 600, brand: "AMD" },
-    { name: "Core i5-13600K", score: 580, brand: "Intel" },
-    { name: "Ryzen 5 7600X", score: 540, brand: "AMD" },
-    { name: "Core i5-12600K", score: 520, brand: "Intel" },
-    { name: "Core Ultra 5 225", score: 500, brand: "Intel" },
+    { name: "Core Ultra 5 245K", score: 650, brand: "Intel", eff: [{power:25,score:210},{power:55,score:370},{power:85,score:510},{power:125,score:610}] },
+    { name: "Ryzen 5 9600X", score: 630, brand: "AMD", eff: [{power:20,score:200},{power:40,score:350},{power:65,score:500},{power:88,score:590}] },
+    { name: "Core i5-14600K", score: 610, brand: "Intel", eff: [{power:30,score:190},{power:65,score:350},{power:100,score:500},{power:150,score:580}] },
+    { name: "Ryzen 7 7700X", score: 600, brand: "AMD", eff: [{power:25,score:190},{power:50,score:350},{power:80,score:490},{power:105,score:560}] },
+    { name: "Core i5-13600K", score: 580, brand: "Intel", eff: [{power:30,score:180},{power:65,score:330},{power:100,score:470}] },
+    { name: "Ryzen 5 7600X", score: 540, brand: "AMD", eff: [{power:20,score:170},{power:40,score:300},{power:65,score:430},{power:105,score:510}] },
+    { name: "Core i5-12600K", score: 520, brand: "Intel", eff: [{power:30,score:170},{power:65,score:310},{power:125,score:470}] },
+    { name: "Core Ultra 5 225", score: 500, brand: "Intel", eff: [{power:20,score:160},{power:45,score:290},{power:65,score:400}] },
   ]},
   { label: "主流", ratio: "50-100x", items: [
     { name: "Core i5-13400F", score: 430, brand: "Intel" },
@@ -127,45 +130,37 @@ export const CPU_MOBILE_TIERS: TierLevel[] = [
 // ====================== GPU 桌面端 ======================
 export const GPU_DESKTOP_TIERS: TierLevel[] = [
   { label: "顶级旗舰", ratio: "300x+", items: [
-    { name: "RTX 5090D", score: 1000, brand: "NVIDIA" },
-    { name: "RTX 5090", score: 980, brand: "NVIDIA" },
-    { name: "RTX 5080", score: 850, brand: "NVIDIA" },
+    { name: "RTX 5090D", score: 1000, brand: "NVIDIA", eff: [{power:150,score:350},{power:300,score:580},{power:450,score:780},{power:575,score:920}] },
+    { name: "RTX 5090", score: 980, brand: "NVIDIA", eff: [{power:150,score:340},{power:300,score:570},{power:450,score:770},{power:575,score:900}] },
+    { name: "RTX 5080", score: 850, brand: "NVIDIA", eff: [{power:120,score:300},{power:220,score:480},{power:320,score:640},{power:360,score:720}] },
   ]},
   { label: "旗舰", ratio: "200-300x", items: [
-    { name: "RTX 4090", score: 820, brand: "NVIDIA" },
-    { name: "RX 7900 XTX", score: 780, brand: "AMD" },
-    { name: "RTX 5070 Ti", score: 750, brand: "NVIDIA" },
-    { name: "RX 7900 XT", score: 710, brand: "AMD" },
-    { name: "RTX 4080 Super", score: 690, brand: "NVIDIA" },
-    { name: "RTX 4080", score: 670, brand: "NVIDIA" },
-    { name: "RX 6950 XT", score: 630, brand: "AMD" },
+    { name: "RTX 4090", score: 820, brand: "NVIDIA", eff: [{power:120,score:280},{power:250,score:500},{power:350,score:660},{power:450,score:780}] },
+    { name: "RX 7900 XTX", score: 780, brand: "AMD", eff: [{power:100,score:260},{power:200,score:450},{power:300,score:610},{power:355,score:720}] },
+    { name: "RTX 5070 Ti", score: 750, brand: "NVIDIA", eff: [{power:100,score:270},{power:180,score:440},{power:280,score:590},{power:300,score:640}] },
+    { name: "RX 7900 XT", score: 710, brand: "AMD", eff: [{power:90,score:240},{power:180,score:410},{power:270,score:560},{power:315,score:650}] },
+    { name: "RTX 4080 Super", score: 690, brand: "NVIDIA", eff: [{power:100,score:250},{power:180,score:410},{power:280,score:550},{power:320,score:620}] },
+    { name: "RX 6950 XT", score: 630, brand: "AMD", eff: [{power:100,score:220},{power:200,score:400},{power:280,score:520},{power:335,score:590}] },
   ]},
   { label: "高端", ratio: "150-200x", items: [
-    { name: "RTX 4070 Ti Super", score: 580, brand: "NVIDIA" },
-    { name: "RX 7900 GRE", score: 555, brand: "AMD" },
-    { name: "RTX 4070 Ti", score: 545, brand: "NVIDIA" },
-    { name: "RX 6900 XT", score: 530, brand: "AMD" },
-    { name: "RTX 5070", score: 520, brand: "NVIDIA" },
-    { name: "RTX 4070 Super", score: 500, brand: "NVIDIA" },
+    { name: "RTX 4070 Ti Super", score: 580, brand: "NVIDIA", eff: [{power:80,score:220},{power:150,score:370},{power:220,score:480},{power:285,score:540}] },
+    { name: "RX 7900 GRE", score: 555, brand: "AMD", eff: [{power:80,score:200},{power:150,score:350},{power:220,score:460},{power:260,score:510}] },
+    { name: "RTX 4070 Ti", score: 545, brand: "NVIDIA", eff: [{power:80,score:210},{power:150,score:360},{power:220,score:470}] },
+    { name: "RTX 5070", score: 520, brand: "NVIDIA", eff: [{power:70,score:200},{power:130,score:340},{power:200,score:440},{power:250,score:490}] },
+    { name: "RTX 4070 Super", score: 500, brand: "NVIDIA", eff: [{power:70,score:190},{power:130,score:330},{power:200,score:430},{power:220,score:460}] },
   ]},
   { label: "中高端", ratio: "100-150x", items: [
-    { name: "RX 7800 XT", score: 440, brand: "AMD" },
-    { name: "RTX 4070", score: 420, brand: "NVIDIA" },
-    { name: "RX 6800 XT", score: 410, brand: "AMD" },
-    { name: "RX 6800", score: 380, brand: "AMD" },
-    { name: "RTX 3070 Ti", score: 370, brand: "NVIDIA" },
-    { name: "RTX 3070", score: 355, brand: "NVIDIA" },
-    { name: "Arc B580", score: 350, brand: "Intel" },
+    { name: "RX 7800 XT", score: 440, brand: "AMD", eff: [{power:60,score:170},{power:120,score:300},{power:180,score:390},{power:263,score:430}] },
+    { name: "RTX 4070", score: 420, brand: "NVIDIA", eff: [{power:60,score:160},{power:110,score:280},{power:170,score:370},{power:200,score:400}] },
+    { name: "RX 6800 XT", score: 410, brand: "AMD", eff: [{power:60,score:155},{power:120,score:280},{power:180,score:370},{power:250,score:400}] },
+    { name: "RTX 3070 Ti", score: 370, brand: "NVIDIA", eff: [{power:60,score:140},{power:120,score:250},{power:180,score:330},{power:290,score:360}] },
+    { name: "Arc B580", score: 350, brand: "Intel", eff: [{power:50,score:130},{power:100,score:230},{power:150,score:310},{power:190,score:340}] },
   ]},
   { label: "主流", ratio: "50-100x", items: [
-    { name: "RTX 4060 Ti", score: 330, brand: "NVIDIA" },
-    { name: "RX 7700 XT", score: 325, brand: "AMD" },
-    { name: "RTX 3060 Ti", score: 300, brand: "NVIDIA" },
-    { name: "RX 6700 XT", score: 290, brand: "AMD" },
-    { name: "RTX 4060", score: 270, brand: "NVIDIA" },
-    { name: "RX 7600", score: 255, brand: "AMD" },
-    { name: "RTX 3060", score: 240, brand: "NVIDIA" },
-    { name: "Arc A750", score: 235, brand: "Intel" },
+    { name: "RTX 4060 Ti", score: 330, brand: "NVIDIA", eff: [{power:40,score:130},{power:80,score:220},{power:130,score:300},{power:160,score:320}] },
+    { name: "RX 7700 XT", score: 325, brand: "AMD", eff: [{power:45,score:125},{power:90,score:220},{power:140,score:290},{power:190,score:320}] },
+    { name: "RTX 4060", score: 270, brand: "NVIDIA", eff: [{power:35,score:110},{power:70,score:190},{power:115,score:250}] },
+    { name: "RX 7600", score: 255, brand: "AMD", eff: [{power:35,score:100},{power:70,score:180},{power:120,score:230},{power:165,score:250}] },
   ]},
   { label: "入门", ratio: "25-50x", items: [
     { name: "GTX 1660 Super", score: 190, brand: "NVIDIA" },
@@ -249,14 +244,12 @@ export const GPU_MOBILE_TIERS: TierLevel[] = [
 // 来源: cpuranklist.com 极客湾手机CPU天梯
 export const CPU_PHONE_TIERS: TierLevel[] = [
   { label: "顶级旗舰", ratio: "400+", items: [
-    { name: "Apple M4", score: 1000, brand: "Apple" },
-    { name: "Snapdragon 8 Elite Gen 5", score: 900, brand: "Qualcomm" },
-    { name: "Dimensity 9500", score: 880, brand: "MediaTek" },
-    { name: "A19 Pro", score: 854, brand: "Apple" },
-    { name: "A19", score: 764, brand: "Apple" },
-    { name: "Apple M2", score: 740, brand: "Apple" },
-    { name: "Snapdragon 8 Elite", score: 737, brand: "Qualcomm" },
-    { name: "Xring O1", score: 713, brand: "Xiaomi" },
+    { name: "Apple M4", score: 1000, brand: "Apple", eff: [{power:5,score:280},{power:10,score:520},{power:15,score:720},{power:22,score:900}] },
+    { name: "Snapdragon 8 Elite Gen 5", score: 900, brand: "Qualcomm", eff: [{power:3,score:250},{power:6,score:480},{power:9,score:680},{power:12,score:820}] },
+    { name: "Dimensity 9500", score: 880, brand: "MediaTek", eff: [{power:3,score:240},{power:6,score:460},{power:9,score:650},{power:11,score:790}] },
+    { name: "A19 Pro", score: 854, brand: "Apple", eff: [{power:3,score:230},{power:6,score:450},{power:9,score:640},{power:12,score:780}] },
+    { name: "Snapdragon 8 Elite", score: 737, brand: "Qualcomm", eff: [{power:3,score:210},{power:6,score:400},{power:9,score:580},{power:12,score:700}] },
+    { name: "Dimensity 9400", score: 711, brand: "MediaTek", eff: [{power:3,score:200},{power:6,score:380},{power:9,score:550},{power:11,score:670}] },
   ]},
   { label: "旗舰", ratio: "250-400", items: [
     { name: "Dimensity 9400", score: 711, brand: "MediaTek" },
