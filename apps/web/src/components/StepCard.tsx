@@ -52,7 +52,7 @@ export default function StepCard({ step, busy, onOption, onHandoff }: Props) {
       </div>
       {step.source_refs.length > 0 && (
         <p className="muted small">
-          依据来源：{step.source_refs.map((s) => s.title).join("；")}（{step.flow_version}，已审核）
+          资料来源：{step.source_refs.map((s) => s.title).join("；")}（流程版本 {step.flow_version}）
         </p>
       )}
     </div>

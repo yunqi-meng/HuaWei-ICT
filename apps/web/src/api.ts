@@ -13,7 +13,7 @@ export interface ApiFailure extends Error {
 
 export async function api<T = unknown>(
   path: string,
-  options: { method?: string; body?: unknown } = {}
+  options: { method?: string; body?: unknown; signal?: AbortSignal } = {},
 ): Promise<T> {
   const resp = await fetch(`/api/v1${path}`, {
     method: options.method ?? (options.body !== undefined ? "POST" : "GET"),
@@ -22,11 +22,14 @@ export async function api<T = unknown>(
       ...(csrfToken ? { "x-csrf-token": csrfToken } : {}),
     },
     credentials: "include",
+    signal: options.signal,
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
-    const failure: ApiFailure = new Error(err.message || `请求失败（${resp.status}）`);
+    const failure: ApiFailure = new Error(
+      err.message || `请求失败（${resp.status}）`,
+    );
     failure.code = err.code;
     failure.status = resp.status;
     throw failure;
@@ -40,7 +43,10 @@ export function newClientMessageId(): string {
 
 export async function uploadImage(body: FormData): Promise<unknown> {
   const response = await fetch("/api/v1/attachments", {
-    method: "POST", credentials: "include", headers: { "x-csrf-token": csrfToken }, body,
+    method: "POST",
+    credentials: "include",
+    headers: { "x-csrf-token": csrfToken },
+    body,
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.message || "图片上传失败");

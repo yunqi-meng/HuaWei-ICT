@@ -1,0 +1,366 @@
+[
+  {
+    "id": "z890-extreme",
+    "name": "ROG MAXIMUS Z890 EXTREME",
+    "brand": "ASUS",
+    "category": "mb",
+    "source_url": "https://rog.asus.com/us/motherboards/rog-maximus/rog-maximus-z890-extreme/",
+    "facts": [
+      {
+        "label": "供电",
+        "value": "24×110A + 2×90A + 1×90A + 2×80A，按官方分组口径"
+      },
+      {
+        "label": "平台",
+        "value": "Intel Z890 / LGA1851 / E-ATX"
+      },
+      {
+        "label": "散热",
+        "value": "VRM 热管散热片；PCIe 5.0 M.2 配有 3D VC 散热器"
+      },
+      {
+        "label": "接口",
+        "value": "双 Thunderbolt 5"
+      }
+    ],
+    "note": "",
+    "image": "/images/products/verified/asus-z890-extreme.webp",
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "z890-carbon",
+    "name": "MPG Z890 CARBON WIFI",
+    "brand": "MSI",
+    "category": "mb",
+    "source_url": "https://www.msi.com/Motherboard/MPG-Z890-CARBON-WIFI",
+    "facts": [
+      {
+        "label": "供电",
+        "value": "20+1+1+1 相，主供电 110A SPS"
+      },
+      {
+        "label": "PCB",
+        "value": "8 层 PCB，2oz 铜"
+      },
+      {
+        "label": "平台",
+        "value": "Intel Z890 / LGA1851 / ATX"
+      },
+      {
+        "label": "散热",
+        "value": "扩展散热片和热管；双面 M.2 Shield Frozr"
+      }
+    ],
+    "note": "",
+    "image": "/images/products/verified/msi-z890-carbon.png",
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "z890-master",
+    "name": "Z890 AORUS MASTER",
+    "brand": "GIGABYTE",
+    "category": "mb",
+    "source_url": "https://www.gigabyte.com/Motherboard/Z890-AORUS-MASTER",
+    "facts": [
+      {
+        "label": "供电",
+        "value": "18+1+2 数字双路供电，VCORE 110A SPS（官网分组口径）"
+      },
+      {
+        "label": "存储",
+        "value": "5 个 M.2，含 2 个 PCIe 5.0 x4"
+      },
+      {
+        "label": "网络",
+        "value": "10GbE 与 Wi-Fi 7"
+      }
+    ],
+    "note": "官网与地区商店的供电分组写法不同，不直接按相数排名。",
+    "image": null,
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "z890-tuf",
+    "name": "TUF GAMING Z890-PLUS WIFI",
+    "brand": "ASUS",
+    "category": "mb",
+    "source_url": "https://www.asus.com/motherboards-components/motherboards/tuf-gaming/tuf-gaming-z890-plus-wifi/",
+    "facts": [
+      {
+        "label": "供电",
+        "value": "16+1+2+1 组，80A DrMOS"
+      },
+      {
+        "label": "PCB",
+        "value": "8 层 PCB"
+      },
+      {
+        "label": "平台",
+        "value": "Intel Z890 / LGA1851"
+      }
+    ],
+    "note": "",
+    "image": "/images/products/verified/asus-tuf-z890.webp",
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "b850m-mortar",
+    "name": "MAG B850M MORTAR WIFI",
+    "brand": "MSI",
+    "category": "mb",
+    "source_url": "https://www.msi.com/Motherboard/MAG-B850M-MORTAR-WIFI",
+    "facts": [
+      {
+        "label": "供电",
+        "value": "12+2+1 Duet Rail，60A SPS"
+      },
+      {
+        "label": "网络",
+        "value": "Wi-Fi 7 与 5G LAN"
+      },
+      {
+        "label": "散热",
+        "value": "扩展散热片；EZ M.2 Shield Frozr II"
+      }
+    ],
+    "note": "修正原条目的 80A；按当前官方产品页记录为 60A。",
+    "image": "/images/products/verified/msi-b850m-mortar.png",
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "b760m-unconfirmed",
+    "name": "B760M-AYW WIFI（原条目）",
+    "brand": "ASUS",
+    "category": "mb",
+    "source_url": null,
+    "facts": [],
+    "note": "无法确认原条目的完整官方型号，已撤下供电、PCB、价格及保修说法。需先核对板上型号或包装标签。",
+    "image": null,
+    "status": "待核验型号",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "astral-5090",
+    "name": "ROG Astral RTX 5090 O32G GAMING",
+    "brand": "ASUS",
+    "category": "gpu",
+    "source_url": "https://rog.asus.com/us/graphics-cards/graphics-cards/rog-astral/rog-astral-rtx5090-o32g-gaming/",
+    "facts": [
+      {
+        "label": "型号",
+        "value": "ROG-ASTRAL-RTX5090-O32G-GAMING，32 GB GDDR7"
+      },
+      {
+        "label": "散热",
+        "value": "四风扇，均热板与相变导热垫"
+      },
+      {
+        "label": "结构",
+        "value": "3.8 槽；金属框架与背板"
+      }
+    ],
+    "note": "原“ROG STRIX RTX 5090 O32G”未找到对应官方产品，现改为可确认的 Astral 型号。",
+    "image": "/images/products/verified/asus-astral-5090.webp",
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "5090-fe",
+    "name": "GeForce RTX 5090 Founders Edition",
+    "brand": "NVIDIA",
+    "category": "gpu",
+    "source_url": "https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5090/",
+    "facts": [
+      {
+        "label": "显存",
+        "value": "32 GB GDDR7"
+      },
+      {
+        "label": "散热",
+        "value": "双贯流（Double Flow Through）风冷设计"
+      }
+    ],
+    "note": "原“涡轮”描述不符，已修正。不要把整机电源推荐瓦数当成显卡耗电量。",
+    "image": null,
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "5080-liquid",
+    "name": "GeForce RTX 5080 16G SUPRIM LIQUID SOC",
+    "brand": "MSI",
+    "category": "gpu",
+    "source_url": "https://storage-asset.msi.com/datasheet/vga/global/GeForce-RTX-5080-16G-SUPRIM-LIQUID-SOC.pdf",
+    "facts": [
+      {
+        "label": "显存",
+        "value": "16 GB GDDR7 / 256 bit"
+      },
+      {
+        "label": "散热",
+        "value": "风冷与液冷混合；360mm 级冷排"
+      },
+      {
+        "label": "尺寸",
+        "value": "显卡 280×148×51mm；冷排总尺寸 394×121×55mm"
+      },
+      {
+        "label": "标称功耗",
+        "value": "360 W（不是实测整机功耗）"
+      }
+    ],
+    "note": "",
+    "image": "/images/products/verified/msi-5080-liquid.png",
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "7900xtx-nitro",
+    "name": "NITRO+ RX 7900 XTX Vapor-X 24G",
+    "brand": "SAPPHIRE",
+    "category": "gpu",
+    "source_url": "https://www.sapphiretech.com/en/consumer/nitro-radeon-rx-7900-xtx-vaporx-24g-gddr6",
+    "facts": [
+      {
+        "label": "型号",
+        "value": "11322-01-40G"
+      },
+      {
+        "label": "显存",
+        "value": "24 GB GDDR6"
+      },
+      {
+        "label": "散热",
+        "value": "Vapor-X 均热板；鳍片散热"
+      },
+      {
+        "label": "结构",
+        "value": "背板；双 BIOS"
+      }
+    ],
+    "note": "没有可靠拆解来源支撑原供电相数，已撤下该数值。",
+    "image": null,
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "4070s-unconfirmed",
+    "name": "RTX 4070 SUPER 旗舰（原条目）",
+    "brand": "未指定 AIB",
+    "category": "gpu",
+    "source_url": null,
+    "facts": [],
+    "note": "这是一类产品而非具体型号，不能统一描述供电、散热、售价或保修。需补全品牌与完整 SKU。",
+    "image": null,
+    "status": "待核验型号",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "mbp16-2024",
+    "name": "MacBook Pro 16 英寸（2024，M4 Max）",
+    "brand": "Apple",
+    "category": "laptop",
+    "source_url": "https://support.apple.com/en-gb/121554",
+    "facts": [
+      {
+        "label": "CPU / GPU",
+        "value": "M4 Max 有 14 核 CPU / 32 核 GPU 与 16 核 CPU / 40 核 GPU 两种配置"
+      },
+      {
+        "label": "屏幕",
+        "value": "16.2 英寸 Liquid Retina XDR"
+      },
+      {
+        "label": "接口",
+        "value": "M4 Max 配置为 Thunderbolt 5"
+      }
+    ],
+    "note": "官方规格未证实原“均热板”描述，已撤下；不同芯片配置不可混写。",
+    "image": "/images/products/verified/apple-mbp16-2024.png",
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "rog-g16-2024",
+    "name": "ROG Zephyrus G16（2024，GA605）",
+    "brand": "ASUS",
+    "category": "laptop",
+    "source_url": "https://press.asus.com/news/press-releases/asus-rog-zephyrus-g16-2024-ga605-amd-ryzen-ai-9-hx-370-nvidia-rtx-4070/",
+    "facts": [
+      {
+        "label": "机身",
+        "value": "CNC 铝合金机身"
+      },
+      {
+        "label": "平台",
+        "value": "AMD Ryzen AI 9 HX 370；GPU 配置以对应 SKU 为准"
+      }
+    ],
+    "note": "补全年份与 GA605 平台；不与 GU605 或其他年份机型的散热方案混写。",
+    "image": null,
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "x1-carbon-12",
+    "name": "ThinkPad X1 Carbon Gen 12",
+    "brand": "Lenovo",
+    "category": "laptop",
+    "source_url": "https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_X1_Carbon_Gen_12/ThinkPad_X1_Carbon_Gen_12_Spec.pdf",
+    "facts": [
+      {
+        "label": "资料范围",
+        "value": "仅 Gen 12；按 Lenovo PSREF 的具体配置表选择"
+      },
+      {
+        "label": "材料",
+        "value": "顶盖含碳纤维；键盘框架含镁；底盖含铝"
+      }
+    ],
+    "note": "不同配置的屏幕、重量、保修方案不同，不统一填为一种配置。",
+    "image": null,
+    "status": "已核对公开资料",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "matebook-unconfirmed",
+    "name": "MateBook X Pro（原条目未标年份）",
+    "brand": "HUAWEI",
+    "category": "laptop",
+    "source_url": null,
+    "facts": [],
+    "note": "同名产品跨多个年份，无法判断原图片和机身、散热描述属于哪款，需补全年份和配置。",
+    "image": null,
+    "status": "待核验型号",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "legion-unconfirmed",
+    "name": "拯救者 Y9000P（原条目未标年份）",
+    "brand": "Lenovo",
+    "category": "laptop",
+    "source_url": null,
+    "facts": [],
+    "note": "原图片为无关实验装置图，已撤下；缺少年份和完整配置，暂不展示散热、用料与质保结论。",
+    "image": null,
+    "status": "待核验型号",
+    "checked_at": "2026-11-01"
+  },
+  {
+    "id": "redmibook-2023",
+    "name": "Redmi Book Pro 15 2023 锐龙版",
+    "brand": "Xiaomi",
+    "category": "laptop",
+    "source_url": "https://www.mi.com/redmi-books/pro-15-amd/specs",
+    "facts": [],
+    "note": "官方历史页面可以确认型号，但本次未取得完整可读规格。撤下原动漫配图及未证实的机身、散热、保修说法。",
+    "image": null,
+    "status": "待补充规格",
+    "checked_at": "2026-11-01"
+  }
+]

@@ -1,15 +1,19 @@
 """硬件数据库 API — 芯片排行、查询、对比、能效曲线"""
 
+from typing import Literal
+
 from fastapi import APIRouter, Query
 
-from .data import get_all_chips, get_chip, get_rankings, compare_chips
+from ...deps import bad_request, not_found
+
+from .data import get_all_chips, get_chip, get_rankings, compare_chips, METRICS
 
 router = APIRouter(tags=["hardware"])
 
 
 @router.get("/hardware/chips")
 def list_chips(
-    type: str | None = Query(None, description="cpu 或 gpu"),
+    type: Literal["cpu", "gpu"] | None = Query(None, description="cpu 或 gpu"),
     brand: str | None = Query(None),
     tier: str | None = Query(None),
     q: str | None = Query(None, description="搜索关键词"),
@@ -31,29 +35,30 @@ def list_chips(
 def chip_detail(chip_id: str):
     chip = get_chip(chip_id)
     if not chip:
-        return {"code": "NOT_FOUND", "message": "芯片不存在"}
+        raise not_found("芯片不存在")
     return chip
 
 
 @router.get("/hardware/rankings")
 def rankings(
-    type: str = Query("cpu", description="cpu 或 gpu"),
-    metric: str = Query("gb6_multi", description="排名指标"),
+    type: Literal["cpu", "gpu"] = Query("cpu", description="cpu 或 gpu"),
+    metric: str = Query("gb7_multi", description="排名指标（Geekbench 7）"),
 ):
-    valid_metrics_cpu = ["gb6_single", "gb6_multi", "cb_r23_single", "cb_r23_multi"]
-    valid_metrics_gpu = ["ts_score", "sn_score", "sn_dx12"]
-    if type == "cpu" and metric not in valid_metrics_cpu:
-        metric = "gb6_multi"
-    if type == "gpu" and metric not in valid_metrics_gpu:
-        metric = "ts_score"
+    if metric not in METRICS[type]:
+        metric = "gb7_multi" if type == "cpu" else "gb7_opencl"
     return {"items": get_rankings(type, metric), "metric": metric, "type": type}
 
 
 @router.post("/hardware/compare")
 def compare(chip_ids: list[str]):
+    chip_ids = list(dict.fromkeys(chip_ids))
     if len(chip_ids) < 2:
-        return {"code": "INVALID_INPUT", "message": "至少选择两个芯片进行对比"}
+        raise bad_request("至少选择两个不同的芯片进行对比")
     if len(chip_ids) > 6:
-        return {"code": "INVALID_INPUT", "message": "最多对比 6 个芯片"}
+        raise bad_request("最多对比 6 个芯片")
     items = compare_chips(chip_ids)
+    if len(items) != len(chip_ids):
+        raise not_found("部分芯片不存在，请重新选择")
+    if len({chip["type"] for chip in items}) != 1:
+        raise bad_request("CPU 与 GPU 的性能指标不同，请选择同类型芯片对比")
     return {"items": items}

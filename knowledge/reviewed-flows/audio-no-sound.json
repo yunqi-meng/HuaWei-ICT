@@ -2,7 +2,7 @@
   "key": "audio-no-sound",
   "title": "电脑外放没有声音",
   "category": "audio",
-  "version_no": 1,
+  "version_no": 2,
   "reviewer": "开发演示内容；上线前需人工审核",
   "symptom_keywords": [
     "没声音",
@@ -17,7 +17,7 @@
   "source_refs": [
     {
       "title": "Microsoft 支持：修复 Windows 中的声音或音频问题",
-      "url": "https://support.microsoft.com/zh-cn/windows"
+      "url": "https://support.microsoft.com/en-gb/windows/hardware/audio/fix-sound-or-audio-problems-in-windows"
     }
   ],
   "graph": {
@@ -116,27 +116,22 @@
       },
       "check_service": {
         "type": "action",
-        "title": "重启 Windows 音频服务",
-        "why": "音频服务异常时，设备列表可能为空或完全无声。",
-        "instruction": "按 Win + R，输入 services.msc 回车 → 找到“Windows Audio” → 右键 → 重新启动。然后回到音量图标处测试声音。",
-        "expected_observation": "服务重启成功，声音恢复或输出设备重新出现。",
+        "title": "运行 Windows 音频疑难解答",
+        "why": "系统疑难解答可以检查输出设备和常见音频配置问题。",
+        "instruction": "设置 → 系统 → 声音 → 疑难解答，或打开“获取帮助”应用运行音频疑难解答。按提示先查看检查结果；遇到重置或驱动卸载建议时停止并转人工。",
+        "expected_observation": "记录疑难解答结果，再播放声音验证。",
         "risk_level": "reversible",
-        "rollback": "该操作无需回退，服务会自动随系统运行。",
+        "rollback": "本步骤先查看诊断结果；已明确同意的可逆设置可按原记录恢复。",
         "stop_conditions": [
-          "服务列表打不开或提示没有权限"
+          "要求卸载驱动、重置设置或缺少权限"
         ],
         "options": {
           "worked": {
-            "label": "重启服务后有声音了",
+            "label": "排查后声音恢复",
             "outcome": "resolved"
           },
           "still_fail": {
-            "label": "还是没声音",
-            "next": "handoff_node",
-            "failed": true
-          },
-          "cant_run": {
-            "label": "打不开服务管理器",
+            "label": "仍未恢复或无法运行",
             "next": "handoff_node",
             "failed": true
           }
@@ -146,7 +141,7 @@
         "type": "handoff",
         "title": "转人工检查驱动与硬件",
         "why": "剩余可能（声卡驱动、硬件故障）需要现场确认，不适合远程指导。",
-        "instruction": "交接摘要会记录已确认的输出设备、服务状态与尝试结果。",
+        "instruction": "交接摘要会记录输出设备、音量合成器与疑难解答的检查结果。",
         "expected_observation": "",
         "risk_level": "observe",
         "rollback": null,
@@ -160,5 +155,6 @@
         }
       }
     }
-  }
+  },
+  "source_checked_at": "2026-11-01"
 }

@@ -2,7 +2,7 @@
   "key": "network-no-internet",
   "title": "Wi-Fi 已连接但网页打不开",
   "category": "network",
-  "version_no": 1,
+  "version_no": 2,
   "reviewer": "开发演示内容；上线前需人工审核",
   "symptom_keywords": [
     "连上wifi",
@@ -19,7 +19,7 @@
   "source_refs": [
     {
       "title": "Microsoft 支持：修复 Windows 中的 Wi-Fi 连接问题",
-      "url": "https://support.microsoft.com/zh-cn/windows"
+      "url": "https://support.microsoft.com/en-us/windows/experience/connectivity-networking/fix-wi-fi-connection-issues-in-windows"
     }
   ],
   "graph": {
@@ -53,7 +53,7 @@
         "type": "explain",
         "title": "问题可能在路由器或校园网",
         "why": "多台设备同时无法上网，通常不是单台电脑的设置问题。",
-        "instruction": "如果是宿舍/家里路由器：断电 30 秒后重新通电，等 2 分钟再试。如果是校园网：确认校园网认证页面是否能打开、账号是否在线数超限。",
+        "instruction": "先确认校园网认证页面、欠费或在线设备数提示。仅对自己管理且当前无人依赖的家用路由器，可按说明重启；宿舍公共设备、校园设备不要自行断电。",
         "expected_observation": "重启路由器或完成校园网认证后网络恢复。",
         "risk_level": "observe",
         "rollback": null,
@@ -80,10 +80,10 @@
         "type": "action",
         "title": "检查系统代理设置",
         "why": "某些软件会悄悄开启系统代理，导致浏览器无法直接联网。",
-        "instruction": "按 Win + I 打开设置 → 网络和 Internet → 代理。确认“使用代理服务器”为关闭，“自动检测设置”为开启。",
-        "expected_observation": "代理开关处于关闭状态；若原本是开启的，关闭后网页应能打开。",
+        "instruction": "按 Win + I → 网络和 Internet → 代理，先记录当前设置。仅在确认代理由自己误开且不属于单位、校园或 VPN 必需配置时临时关闭“使用代理服务器”并测试；不确定时停止并转人工。不要改动自动配置脚本。",
+        "expected_observation": "对照原设置，测试网页能否恢复；未恢复则恢复原代理配置。",
         "risk_level": "reversible",
-        "rollback": "如原本就是开启状态且你不确定，可回到同一页面重新打开该开关。",
+        "rollback": "恢复刚才记录的开关与代理设置；不确定配置用途时不要修改。",
         "stop_conditions": [
           "页面中出现你不认识且正在使用的单位/校园代理配置"
         ],
@@ -158,12 +158,12 @@
         "type": "action",
         "title": "确认 DNS 为自动获取",
         "why": "手工设置的错误 DNS 会导致网页无法解析。",
-        "instruction": "设置 → 网络和 Internet → 高级网络设置 → 更多网络适配器选项 → 右键当前 Wi-Fi → 属性 → 双击“Internet 协议版本 4 (TCP/IPv4)” → 选择“自动获得 IP 地址”和“自动获得 DNS 服务器地址”→ 确定。",
+        "instruction": "先记录当前 IPv4 与 DNS 设置。仅在确认该网络本应自动获取 DNS 时，按网络管理员或路由器说明恢复 DNS；不要同时更改 IP 地址、网关或静态地址。单位、校园静态配置或不确定时停止并转人工。",
         "expected_observation": "两个选项均为“自动获得”；修改后网页应能打开。",
         "risk_level": "reversible",
-        "rollback": "记下修改前的数值即可在同一页面改回。",
+        "rollback": "如有改动，恢复记录的原 DNS 设置；不改动 IP 地址和网关。",
         "stop_conditions": [
-          "当前网络由单位/学校统一指定固定 IP"
+          "网络使用单位或校园的静态 IP / DNS，或不清楚当前配置用途"
         ],
         "options": {
           "worked": {
@@ -200,5 +200,6 @@
         }
       }
     }
-  }
+  },
+  "source_checked_at": "2026-11-01"
 }

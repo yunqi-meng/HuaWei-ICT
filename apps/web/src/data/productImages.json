@@ -1,0 +1,65 @@
+[
+  {
+    "path": "/images/products/verified/asus-astral-5090.webp",
+    "model": "ROG Astral RTX 5090 O32G GAMING",
+    "source_url": "https://dlcdnwebimgs.asus.com/gain/128A96DB-DA90-4C45-A7A7-2A56F9F4F48A/w717/h525/fwebp",
+    "product_url": "https://rog.asus.com/us/graphics-cards/graphics-cards/rog-astral/rog-astral-rtx5090-o32g-gaming/",
+    "checked_at": "2026-11-01",
+    "sha256": "9ee22b630baacddc1e20854a0c38c41896de49138a48638256e955bc6d01a06e",
+    "product_id": "astral-5090"
+  },
+  {
+    "path": "/images/products/verified/asus-tuf-z890.webp",
+    "model": "TUF GAMING Z890-PLUS WIFI",
+    "source_url": "https://dlcdnwebimgs.asus.com/gain/e8c6fe24-aba5-44cf-a13e-abef2679fdd2/w800",
+    "product_url": "https://www.asus.com/motherboards-components/motherboards/tuf-gaming/tuf-gaming-z890-plus-wifi/",
+    "checked_at": "2026-11-01",
+    "sha256": "da172e60a5f6d987db3517722ebffc46f3b4732d4133264696f914aaa430bb2c",
+    "product_id": "z890-tuf"
+  },
+  {
+    "path": "/images/products/verified/apple-mbp16-2024.png",
+    "model": "MacBook Pro 16-inch 2024",
+    "source_url": "https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/mbp16-2024.png",
+    "product_url": "https://support.apple.com/en-gb/121554",
+    "checked_at": "2026-11-01",
+    "sha256": "1b5fc160f5b91235490fb4c20b3094677306e0be6e99bb4f814ee959de89f239",
+    "product_id": "mbp16-2024"
+  },
+  {
+    "path": "/images/products/verified/msi-b850m-mortar.png",
+    "model": "MAG B850M MORTAR WIFI",
+    "source_url": "https://storage-asset.msi.com/global/picture/image/feature/mb/B850/mag-B850m-mortar-wifi/mag-b850m-mortar-wifi-kv.png",
+    "product_url": "https://www.msi.com/Motherboard/MAG-B850M-MORTAR-WIFI",
+    "checked_at": "2026-11-01",
+    "sha256": "1bae7d9387a2769f5cd02636e893a4a2b210fbda54292ab4c42d827ff0f17790",
+    "product_id": "b850m-mortar"
+  },
+  {
+    "path": "/images/products/verified/msi-z890-carbon.png",
+    "model": "MPG Z890 CARBON WIFI",
+    "source_url": "https://storage-asset.msi.com/global/picture/image/feature/mb/z890/mpg-z890-carbon-wifi/kv-pd.png",
+    "product_url": "https://www.msi.com/Motherboard/MPG-Z890-CARBON-WIFI",
+    "checked_at": "2026-11-01",
+    "sha256": "21cfc8b328104099c7f8102a05e45f3bfb71a78906e76834303e45ef7c45486d",
+    "product_id": "z890-carbon"
+  },
+  {
+    "path": "/images/products/verified/asus-z890-extreme.webp",
+    "model": "ROG MAXIMUS Z890 EXTREME",
+    "source_url": "https://dlcdnwebimgs.asus.com/gain/BE083FFC-11E2-4BBC-A4FB-18C5C5880C1A/w717/h525/fwebp",
+    "product_url": "https://rog.asus.com/us/motherboards/rog-maximus/rog-maximus-z890-extreme/",
+    "checked_at": "2026-11-01",
+    "sha256": "5387038c8997cdcc0b8309ccac307e06d71b75cacf171b66d4549eedbae70470",
+    "product_id": "z890-extreme"
+  },
+  {
+    "path": "/images/products/verified/msi-5080-liquid.png",
+    "model": "RTX 5080 16G SUPRIM LIQUID SOC",
+    "source_url": "https://storage-asset.msi.com/global/picture/image/feature/vga/NVIDIA/new-gen/gb203-suprimliquid-soc/kv/msi-supurim-liquid-kv-pd.png",
+    "product_url": "https://www.msi.com/Graphics-Card/GeForce-RTX-5080-16G-SUPRIM-LIQUID-SOC",
+    "checked_at": "2026-11-01",
+    "sha256": "02c5de331c4d722540fd6026381e4413eafa4527a96a15750e92be6a1de1f68e",
+    "product_id": "5080-liquid"
+  }
+]

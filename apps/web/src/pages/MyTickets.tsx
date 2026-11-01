@@ -1,97 +1,139 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { api, newClientMessageId } from "../api";
-import { useAuth } from "../auth";
-import DeviceSelect from "../components/DeviceSelect";
+import { Link } from "react-router-dom";
+import PageHeader from "../components/PageHeader";
+import DirectRepairRequest from "../components/DirectRepairRequest";
+import { LoadingState, ErrorState, EmptyState } from "../components/AsyncState";
+import { useResource } from "../hooks/useResource";
 import { OUTCOME_LABEL, TICKET_STATUS_LABEL, type Ticket } from "../types";
-
+const sessionLabels: Record<string, string> = {
+  INTAKE: "接收中",
+  CLARIFY: "确认环境",
+  GUIDE: "排查中",
+  VERIFY: "等待验证",
+  PAUSED: "已暂停",
+  RESOLVED: "已解决",
+  HANDOFF: "转人工",
+  CLOSED: "已结束",
+};
+const appointmentLabels: Record<string, string> = {
+  HELD: "待确认",
+  CONFIRMED: "已确认",
+  CHECKED_IN: "已签到",
+  CANCELLED: "已取消",
+  COMPLETED: "已完成",
+};
 export default function MyTickets() {
-  const { me, loading } = useAuth();
-  const nav = useNavigate();
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [sessions, setSessions] = useState<{ id: string; state: string; symptom_text: string; updated_at: string }[]>([]);
-  const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const [deviceId,setDeviceId]=useState("");
-  const [err, setErr] = useState("");
-  const [busy, setBusy] = useState(false);
-  const request = useRef({ signature: "", key: "" });
-
-  function refresh() {
-    api<Ticket[]>("/tickets/mine").then(setTickets).catch(() => undefined);
-    api<typeof sessions>("/diagnosis-sessions").then(setSessions).catch(() => undefined);
-  }
-  useEffect(refresh, []);
-
-  if (!loading && !me) return <div className="card"><p>请先 <Link to="/login">登录</Link>。</p></div>;
-
-  async function createDirectTicket() {
-    if (title.trim().length < 2 || busy) return;
-    const signature = JSON.stringify([title.trim(), desc.trim(),deviceId]);
-    if (request.current.signature !== signature) {
-      request.current = { signature, key: newClientMessageId() };
-    }
-    setBusy(true);
-    setErr("");
-    try {
-      const t = await api<Ticket>("/tickets", {
-        body: { title: title.trim(), description: desc.trim(),
-                device_id:deviceId||null,
-                idempotency_key: request.current.key },
-      });
-      nav(`/appointments/new?ticketId=${t.id}`);
-    } catch (e) {
-      setErr((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
+  const tickets = useResource<Ticket[]>("/tickets/mine");
+  const sessions = useResource<
+    { id: string; state: string; symptom_text: string; updated_at: string }[]
+  >("/diagnosis-sessions");
   return (
     <div>
-      <h2>我的服务</h2>
-
-      <div className="card">
-        <h4>直接预约人工（不经过智能排障）</h4>
-        <DeviceSelect value={deviceId} onChange={setDeviceId}/>
-        <input placeholder="一句话描述问题，如：电脑无法开机" value={title}
-               onChange={(e) => setTitle(e.target.value)} />
-        <textarea rows={2} placeholder="补充说明（可选）" value={desc}
-                  onChange={(e) => setDesc(e.target.value)} style={{ marginTop: 8 }} />
-        {err && <div className="error-box">{err}</div>}
-        <div className="option-row">
-          <button className="btn btn-primary" disabled={busy || title.trim().length < 2}
-                  onClick={() => void createDirectTicket()}>
-            提交并预约时段
-          </button>
-        </div>
+      <PageHeader
+        eyebrow="SERVICE CENTER / 我的服务"
+        title="每一次服务，都有记录。"
+        description="继续排查、查看维修进度，或直接预约人工义诊。"
+        actions={
+          <Link className="btn" to="/my/devices">
+            管理我的设备
+          </Link>
+        }
+      />
+      <DirectRepairRequest />
+      <div className="section-heading">
+        <h2>
+          我的工单{" "}
+          <span className="count-badge">{tickets.data?.length || 0}</span>
+        </h2>
+        <button className="text-button" onClick={tickets.reload}>
+          刷新工单
+        </button>
       </div>
-
-      <h3>我的工单</h3>
-      {tickets.map((t) => (
-        <div className="card" key={t.id}>
-          <Link to={`/tickets/${t.id}`}><strong>{t.title}</strong></Link>{" "}
-          <span className={`badge ${t.status === "CLOSED" ? "badge-ok" : t.status === "CANCELLED" ? "badge-neutral" : "badge-warn"}`}>
-            {TICKET_STATUS_LABEL[t.status] ?? t.status}
-          </span>
-          {t.outcome && <span className="badge badge-neutral">{OUTCOME_LABEL[t.outcome]}</span>}
-          {t.active_appointment && (
-            <p className="small muted">预约状态：{t.active_appointment.status}</p>
-          )}
-          <p className="small muted">{t.created_at?.slice(0, 16).replace("T", " ")}</p>
-        </div>
-      ))}
-      {tickets.length === 0 && <p className="muted">还没有工单。</p>}
-
-      <h3>排障会话</h3>
-      {sessions.map((s) => (
-        <div className="card" key={s.id}>
-          <Link to={`/diagnosis/${s.id}`}>{s.symptom_text}</Link>{" "}
-          <span className="badge badge-neutral">{s.state}</span>
-          <p className="small muted">更新于 {s.updated_at?.slice(0, 16).replace("T", " ")}</p>
-        </div>
-      ))}
-      {sessions.length === 0 && <p className="muted">还没有排障记录。</p>}
+      {tickets.error ? (
+        <ErrorState message={tickets.error} retry={tickets.reload} />
+      ) : tickets.loading ? (
+        <LoadingState label="正在读取工单…" />
+      ) : !tickets.data?.length ? (
+        <section className="card">
+          <EmptyState
+            title="还没有工单"
+            description="需要人工协助时，可以使用上方表单预约维修。"
+          />
+        </section>
+      ) : (
+        tickets.data.map((ticket) => (
+          <article className="card" key={ticket.id}>
+            <div className="section-heading" style={{ marginBottom: 12 }}>
+              <h3 style={{ margin: 0 }}>
+                <Link to={`/tickets/${ticket.id}`}>{ticket.title}</Link>
+              </h3>
+              <span
+                className={`badge ${ticket.status === "CLOSED" ? "badge-ok" : ticket.status === "CANCELLED" ? "badge-neutral" : "badge-warn"}`}
+              >
+                {TICKET_STATUS_LABEL[ticket.status] || ticket.status}
+              </span>
+            </div>
+            {ticket.outcome && (
+              <span className="badge badge-neutral">
+                {OUTCOME_LABEL[ticket.outcome]}
+              </span>
+            )}
+            {ticket.active_appointment && (
+              <p className="muted small" style={{ marginBottom: 6 }}>
+                预约：
+                {appointmentLabels[ticket.active_appointment.status] ||
+                  ticket.active_appointment.status}{" "}
+                · {ticket.active_appointment.slot?.service_date}{" "}
+                {ticket.active_appointment.slot?.start_at}
+              </p>
+            )}
+            <span className="muted small">
+              创建于 {ticket.created_at?.slice(0, 16).replace("T", " ")}
+            </span>
+            <div className="option-row">
+              <Link className="text-button" to={`/tickets/${ticket.id}`}>
+                查看服务进度 →
+              </Link>
+            </div>
+          </article>
+        ))
+      )}
+      <div className="section-heading" style={{ marginTop: 30 }}>
+        <h2>
+          排障记录{" "}
+          <span className="count-badge">{sessions.data?.length || 0}</span>
+        </h2>
+        <Link className="text-button" to="/help">
+          开始新的排查 →
+        </Link>
+      </div>
+      {sessions.error ? (
+        <ErrorState message={sessions.error} retry={sessions.reload} />
+      ) : sessions.loading ? (
+        <LoadingState label="正在读取排障记录…" />
+      ) : !sessions.data?.length ? (
+        <section className="card">
+          <EmptyState
+            title="还没有排障记录"
+            description="从问题求助开始，每一步的检查都会保存在这里。"
+          />
+        </section>
+      ) : (
+        sessions.data.map((session) => (
+          <article className="card" key={session.id}>
+            <div className="section-heading" style={{ marginBottom: 10 }}>
+              <Link to={`/diagnosis/${session.id}`}>
+                <strong>{session.symptom_text}</strong>
+              </Link>
+              <span className="badge badge-neutral">
+                {sessionLabels[session.state] || session.state}
+              </span>
+            </div>
+            <span className="muted small">
+              更新于 {session.updated_at?.slice(0, 16).replace("T", " ")}
+            </span>
+          </article>
+        ))
+      )}
     </div>
   );
 }

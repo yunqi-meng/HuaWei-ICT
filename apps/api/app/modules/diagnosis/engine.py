@@ -254,7 +254,7 @@ def start_session(user_id: str, device_id: str | None, symptom_text: str, *, env
                 (category, fv["id"], entry, now, sid))
             session = get_session(sid, conn)
             _record_step(conn, session, fv, entry)
-            _assistant_message(conn, sid, f"已匹配已审核的排查流程「{fv['flow_title']}」，我们一步一步来。")
+            _assistant_message(conn, sid, f"已匹配排查流程「{fv['flow_title']}」，请结合资料来源与实际环境逐步检查。")
         else:
             # 3. 缺少关键信息：进入有限追问
             conn.execute(

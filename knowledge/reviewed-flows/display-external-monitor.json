@@ -2,7 +2,7 @@
   "key": "display-external-monitor",
   "title": "外接显示器没有画面",
   "category": "display",
-  "version_no": 1,
+  "version_no": 2,
   "reviewer": "开发演示内容；上线前需人工审核",
   "symptom_keywords": [
     "外接",
@@ -17,7 +17,7 @@
   "source_refs": [
     {
       "title": "Microsoft 支持：连接外部显示器",
-      "url": "https://support.microsoft.com/zh-cn/windows"
+      "url": "https://support.microsoft.com/en-us/windows/hardware/display-graphics/troubleshoot-external-monitor-connections-in-windows"
     }
   ],
   "graph": {
@@ -115,5 +115,6 @@
         }
       }
     }
-  }
+  },
+  "source_checked_at": "2026-11-01"
 }

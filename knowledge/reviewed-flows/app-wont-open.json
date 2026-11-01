@@ -2,7 +2,7 @@
   "key": "app-wont-open",
   "title": "软件打不开或一打开就闪退",
   "category": "app",
-  "version_no": 1,
+  "version_no": 2,
   "reviewer": "开发演示内容；上线前需人工审核",
   "symptom_keywords": [
     "打不开",
@@ -16,7 +16,7 @@
   "source_refs": [
     {
       "title": "Microsoft 支持：修复 Microsoft Store 应用问题",
-      "url": "https://support.microsoft.com/zh-cn/windows"
+      "url": "https://support.microsoft.com/en-us/windows/apps/repair-apps-and-programs-in-windows"
     }
   ],
   "graph": {
@@ -50,11 +50,13 @@
         "type": "action",
         "title": "彻底结束进程后重开",
         "why": "后台残留的异常进程会阻止软件再次正常启动。",
-        "instruction": "按 Ctrl + Shift + Esc 打开任务管理器 → 在“进程”页找到该软件 → 右键 → 结束任务。然后重新打开软件。",
+        "instruction": "先保存该软件与关联窗口中的工作。若无法保存且有重要内容，停止并转人工；确认没有未保存内容后，任务管理器中只结束目标软件进程，再重新打开。",
         "expected_observation": "进程被结束，软件重新启动。",
         "risk_level": "reversible",
-        "rollback": "该操作无需回退，软件可再次正常启动。",
-        "stop_conditions": [],
+        "rollback": "可重新启动应用；未保存的内容无法保证恢复，确认有未保存工作时不要结束任务。",
+        "stop_conditions": [
+          "有未保存工作或不确定目标进程"
+        ],
         "options": {
           "worked": {
             "label": "重开后正常了",
@@ -96,10 +98,10 @@
         "type": "action",
         "title": "使用系统“修复”功能（不丢数据优先）",
         "why": "系统自带的修复可修复损坏的应用文件，且先于“重置”（重置会清除应用数据）。",
-        "instruction": "设置 → 应用 → 已安装的应用 → 找到该软件 → 点“…”→ 高级选项 → 先点“修复”；修复无效再考虑“重置”（注意：重置会清除该应用的本地数据）。若没有“高级选项”，说明该软件不支持此方式。",
+        "instruction": "先备份重要应用数据并保存工作。设置 → 应用 → 已安装的应用 → 目标软件 → 高级选项，仅尝试“修复”。没有此选项或修复无效时转人工；本流程不执行“重置”、卸载或重新安装。",
         "expected_observation": "修复完成后软件可正常打开。",
         "risk_level": "reversible",
-        "rollback": "“修复”无需回退；如已执行“重置”，应用数据不可恢复（操作前已提示）。",
+        "rollback": "修复通常保留应用数据，仍需事先备份；不执行重置。",
         "stop_conditions": [
           "该软件含有未备份的重要本地数据，先不要点“重置”"
         ],
@@ -109,7 +111,7 @@
             "outcome": "resolved"
           },
           "still_fail": {
-            "label": "修复/重置后仍不行",
+            "label": "修复后仍不行",
             "next": "handoff_node",
             "failed": true
           },
@@ -138,5 +140,6 @@
         }
       }
     }
-  }
+  },
+  "source_checked_at": "2026-11-01"
 }

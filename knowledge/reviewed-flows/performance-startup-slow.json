@@ -2,7 +2,7 @@
   "key": "performance-startup-slow",
   "title": "电脑开机很慢、越用越卡",
   "category": "performance",
-  "version_no": 1,
+  "version_no": 2,
   "reviewer": "开发演示内容；上线前需人工审核",
   "symptom_keywords": [
     "开机慢",
@@ -21,7 +21,7 @@
   "source_refs": [
     {
       "title": "Microsoft 支持：提高电脑性能的提示",
-      "url": "https://support.microsoft.com/zh-cn/windows"
+      "url": "https://support.microsoft.com/en-us/windows/experience/performance-optimization/tips-to-improve-pc-performance-in-windows"
     }
   ],
   "graph": {
@@ -76,7 +76,7 @@
       "check_storage": {
         "type": "observe",
         "title": "检查系统盘剩余空间",
-        "why": "系统盘空间不足（低于 10%）会明显拖慢系统。",
+        "why": "空间紧张可能影响系统运行，但不能仅凭剩余百分比确定卡顿原因。",
         "instruction": "打开文件资源管理器 → 此电脑，查看 C 盘剩余空间。",
         "expected_observation": "能看到 C 盘可用容量。",
         "risk_level": "observe",
@@ -84,7 +84,7 @@
         "stop_conditions": [],
         "options": {
           "low_space": {
-            "label": "剩余不到 10% 或已标红",
+            "label": "空间紧张或系统有低空间提示",
             "next": "cleanup_storage"
           },
           "space_ok": {
@@ -95,25 +95,18 @@
         }
       },
       "cleanup_storage": {
-        "type": "action",
-        "title": "清理临时文件并开启存储感知",
-        "why": "释放系统盘空间可直接改善卡顿。",
-        "instruction": "设置 → 系统 → 存储 → 打开“存储感知”开关 → 点击“临时文件”，勾选“临时文件”“回收站”（先确认回收站没有要恢复的文件）→ 删除文件。",
-        "expected_observation": "C 盘可用空间增加。",
-        "risk_level": "reversible",
-        "rollback": "存储感知可随时在同一页面关闭；已删除的回收站文件不可恢复（操作前已提示确认）。",
-        "stop_conditions": [
-          "临时文件列表中出现你不认识的大文件，先不要勾选"
-        ],
+        "type": "observe",
+        "title": "记录存储占用并转人工确认",
+        "why": "删除文件不可保证回退，先核对占用和备份。",
+        "instruction": "设置 → 系统 → 存储，只查看并记录占用分类，不启用存储感知、不删除临时文件或清空回收站。把剩余容量与主要占用交给维修员确认清理方案。",
+        "expected_observation": "已记录占用，等待人工确认备份和清理范围。",
+        "risk_level": "observe",
+        "rollback": null,
+        "stop_conditions": [],
         "options": {
-          "worked": {
-            "label": "清理后空间够用了，也变流畅了",
-            "outcome": "resolved"
-          },
-          "still_fail": {
-            "label": "清理后还是卡",
-            "next": "handoff_node",
-            "failed": true
+          "recorded": {
+            "label": "已记录，转人工确认",
+            "next": "handoff_node"
           }
         }
       },
@@ -121,7 +114,7 @@
         "type": "handoff",
         "title": "转人工深入检查",
         "why": "剩余可能（内存不足、机械硬盘老化、恶意软件）需要现场用专业工具确认。",
-        "instruction": "交接摘要会记录启动项数量、磁盘空间与已做清理。",
+        "instruction": "交接摘要会记录已查看的启动项与磁盘空间；本流程未删除文件。",
         "expected_observation": "",
         "risk_level": "observe",
         "rollback": null,
@@ -135,5 +128,6 @@
         }
       }
     }
-  }
+  },
+  "source_checked_at": "2026-11-01"
 }

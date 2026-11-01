@@ -18,11 +18,11 @@ GUIDES = [
         "content": (
             "## 适用环境\nWindows 11 / Windows 10 笔记本或台式机。\n\n"
             "## 步骤\n1. **确认影响范围**：用手机连接同一 Wi-Fi，看能否上网。\n"
-            "2. **关闭系统代理**：设置 → 网络和 Internet → 代理 → 关闭“使用代理服务器”。\n"
+            "2. **检查系统代理**：先记录当前设置，仅在确认是自己误开的非单位/校园/VPN 代理时临时关闭测试；不确定则转人工。\n"
             "3. **刷新 DNS 缓存**：管理员终端执行 `ipconfig /flushdns`。\n"
-            "4. **确认 DNS 自动获取**：网络适配器属性 → IPv4 → 自动获得 DNS。\n\n"
+            "4. **核对 DNS**：先记录原设置；按网络管理员说明核对，不改动静态 IP 或网关，不确定则转人工。\n\n"
             "## 回退说明\n以上修改均可在原页面改回。DNS 缓存无需回退。\n\n"
-            "## 来源\nMicrosoft 支持：修复 Windows 中的 Wi-Fi 连接问题（审核日期 2026-10-20）。"
+            "## 来源\nMicrosoft 支持：修复 Windows 中的 Wi-Fi 连接问题。项目演示指南；2026-11-01 核对来源，仍需维修人员复核。"
         ),
     },
     {
@@ -32,8 +32,8 @@ GUIDES = [
             "## 适用环境\nWindows 11。\n\n"
             "## 步骤\n1. 点击任务栏音量图标，确认当前输出设备是否为“扬声器”。\n"
             "2. 右键音量图标 → 音量合成器，检查是否有应用被单独静音。\n"
-            "3. Win + R 输入 `services.msc`，重启“Windows Audio”服务。\n\n"
-            "## 何时找人工\n设备列表里完全没有扬声器，或重启服务无效，可能涉及驱动/硬件。"
+            "3. 设置 → 系统 → 声音 → 疑难解答，或在“获取帮助”运行音频诊断。先记录结果，不自行卸载驱动或重置。\n\n"
+            "## 何时找人工\n设备列表里完全没有扬声器，或疑难解答未恢复，可能涉及驱动/硬件。"
         ),
     },
     {
@@ -51,7 +51,7 @@ GUIDES = [
         "category": "performance", "estimated_minutes": 15, "difficulty": "medium",
         "content": (
             "## 步骤\n1. 任务管理器 → 启动应用，禁用不需要的自启软件（不要禁用显卡/音频/触摸板条目）。\n"
-            "2. 此电脑查看 C 盘剩余空间，低于 10% 时：设置 → 系统 → 存储 → 存储感知 + 清理临时文件。\n\n"
+            "2. 此电脑查看系统盘剩余空间，再到设置 → 系统 → 存储查看占用分类。只记录，不删除文件、不清空回收站、不启用自动清理；先让维修员确认备份与清理范围。\n\n"
             "## 回退说明\n启动项可随时重新启用。"
         ),
     },
@@ -59,13 +59,18 @@ GUIDES = [
         "key": "app-wont-open", "title": "软件打不开/闪退的自助处理",
         "category": "app", "estimated_minutes": 12, "difficulty": "easy",
         "content": (
-            "## 步骤\n1. 任务管理器结束该软件全部进程后重开。\n"
+            "## 步骤\n1. 先保存该软件及关联窗口中的工作；无法保存且有重要内容时停止。确认没有未保存工作后，只结束目标软件进程再重开。\n"
             "2. 核对软件官网的系统要求与当前系统版本（设置 → 系统 → 关于）。\n"
             "3. 设置 → 应用 → 已安装的应用 → 高级选项，仅在已保存工作后尝试“修复”；不要自行重置，涉及应用数据请找人工确认。\n\n"
             "## 何时找人工\n报错持续出现或有错误码，请截图并到服务点。"
         ),
     },
 ]
+
+
+GUIDE_SOURCE_URLS = {'network-no-internet': 'https://support.microsoft.com/en-us/windows/experience/connectivity-networking/fix-wi-fi-connection-issues-in-windows', 'audio-no-sound': 'https://support.microsoft.com/en-gb/windows/hardware/audio/fix-sound-or-audio-problems-in-windows', 'display-external-monitor': 'https://support.microsoft.com/en-us/windows/hardware/display-graphics/troubleshoot-external-monitor-connections-in-windows', 'performance-startup-slow': 'https://support.microsoft.com/en-us/windows/experience/performance-optimization/tips-to-improve-pc-performance-in-windows', 'app-wont-open': 'https://support.microsoft.com/en-us/windows/apps/repair-apps-and-programs-in-windows'}
+for _guide in GUIDES:
+    _guide["source_url"] = GUIDE_SOURCE_URLS[_guide["key"]]
 
 
 def _ensure_user(conn, email: str, name: str, roles: list[str]) -> str:
@@ -89,9 +94,16 @@ def _seed_flows(conn) -> None:
         version_no = data.get("version_no", 1)
         if existing:
             current = q_one("SELECT * FROM flow_versions WHERE flow_id=? AND status='published' ORDER BY version_no DESC LIMIT 1", (existing["id"],), conn)
-            if not current or not validate_flow_graph(json.loads(current["graph"])):
+            # Only migrate project demo records. Human-authored/reviewed content is retained.
+            if not current or not str(current.get("reviewer", "")).startswith("开发演示内容"):
                 continue
-            # 对早期演示库中含循环的旧版执行安全撤回，以新不可变版本修正。
+            same = (json.loads(current["graph"]) == data["graph"]
+                    and json.loads(current["source_refs"]) == data.get("source_refs", [])
+                    and json.loads(current["symptom_keywords"]) == data.get("symptom_keywords", [])
+                    and json.loads(current["risk_keywords"]) == data.get("risk_keywords", []))
+            if same and not validate_flow_graph(json.loads(current["graph"])):
+                continue
+            # Retain the immutable historical version for existing diagnosis sessions.
             conn.execute("UPDATE flow_versions SET status='withdrawn' WHERE id=?", (current["id"],))
             version_no = (q_one("SELECT MAX(version_no) AS n FROM flow_versions WHERE flow_id=?", (existing["id"],), conn)["n"] or 0) + 1
         errors = validate_flow_graph(data["graph"])
@@ -124,24 +136,39 @@ def _seed_guides(conn) -> None:
                       "estimated_minutes": 8, "difficulty": "easy", "source_url": data["source_refs"][0]["url"],
                       "content": f"## 适用环境\nWindows 11。\n\n## 检查\n{node['instruction']}\n\n## 验证\n{node['expected_observation']}\n\n## 回退\n{node.get('rollback') or '仅查看，无变更'}\n\n## 人工出口\n未恢复或不确定时请停止并转人工。"})
     for g in GUIDES + extra:
-        if q_one("SELECT id FROM knowledge_documents WHERE title=?", (g["title"],), conn):
-            continue
-        did = new_id("kd")
-        conn.execute(
-            "INSERT INTO knowledge_documents (id, title, category, source_url, reviewer, created_at) "
-            "VALUES (?,?,?,?,?,?)",
-            (did, g["title"], g["category"], g.get("source_url", "https://support.microsoft.com/zh-cn/windows"),
-             "开发演示内容；上线前需人工审核", now))
-        vid = new_id("kv")
         applicability = {
             "os_family": "windows", "os_version_range": "10-11", "device_type": "any",
-            "symptom_tags": [g["category"]], "risk_level": "observe",
+            "symptom_tags": [g["category"]], "risk_level": "observe" if g["key"] == "storage-observation" else "reversible",
             "estimated_minutes": g["estimated_minutes"], "difficulty": g["difficulty"],
         }
+        existing = q_one("SELECT * FROM knowledge_documents WHERE title=?", (g["title"],), conn)
+        version_no = 1
+        if existing:
+            if not str(existing.get("reviewer", "")).startswith("开发演示内容"):
+                continue
+            current = q_one("SELECT * FROM knowledge_versions WHERE document_id=? ORDER BY version_no DESC LIMIT 1", (existing["id"],), conn)
+            # Do not alter content that has entered a human review workflow.
+            if not current or current["reviewed_at"] or current["status"] != "published":
+                continue
+            if (current["content"] == g["content"] and existing["source_url"] == g["source_url"]
+                    and json.loads(current["applicability"]) == applicability):
+                continue
+            did = existing["id"]
+            version_no = current["version_no"] + 1
+            conn.execute("UPDATE knowledge_versions SET status='withdrawn' WHERE id=?", (current["id"],))
+            conn.execute("UPDATE knowledge_documents SET source_url=? WHERE id=?", (g["source_url"], did))
+        else:
+            did = new_id("kd")
+            conn.execute(
+                "INSERT INTO knowledge_documents (id, title, category, source_url, reviewer, created_at) "
+                "VALUES (?,?,?,?,?,?)",
+                (did, g["title"], g["category"], g["source_url"],
+                 "开发演示内容；上线前需人工审核", now))
+        vid = new_id("kv")
         conn.execute(
             "INSERT INTO knowledge_versions (id, document_id, version_no, status, content, "
             "applicability, visibility, reviewed_at, created_at) VALUES (?,?,?,?,?,?,?,?,?)",
-            (vid, did, 1, "published", g["content"],
+            (vid, did, version_no, "published", g["content"],
              json.dumps(applicability, ensure_ascii=False), "public", None, now))
         # 按段分块（一条完整操作保留在同一语义单元，方案 9.2）
         for i, block in enumerate([b.strip() for b in g["content"].split("\n\n") if b.strip()]):
