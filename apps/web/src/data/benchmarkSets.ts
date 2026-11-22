@@ -1,9 +1,10 @@
 import { chips, CHECKED_AT } from "./hardware";
 import { normalizePoints, scoreAtPower } from "./performance";
 import type { EffPoint } from "./perfTiers";
+import { rankedLadderCpus as ladderCpus, scoredLadderGpus as ladderGpus, LADDER_CHECKED_AT } from "./ladder";
 
 export type Platform = "desktop" | "mobile" | "phone";
-export type ViewMode = "tier" | "curve";
+type ViewMode = "tier" | "curve";
 export type Component = "cpu" | "gpu";
 export interface PerformanceRow {
   id: string; name: string; searchName?: string; brand: string; score: number;
@@ -28,12 +29,36 @@ const brand = (group: string) => brandNames[group] || (group.startsWith("NVIDIA"
 export const displayNumber = (value: number | null, digits=2) => value == null || !Number.isFinite(value) ? "—" : value.toLocaleString("zh-CN",{maximumFractionDigits:digits});
 
 export function desktopSets(): BenchmarkSet[] {
-  return ([['cpu','gb7_multi','Geekbench 7 多核'],['cpu','gb7_single','Geekbench 7 单核'],['gpu','gb7_opencl','Geekbench 7 OpenCL']] as const).map(([type,metric,label])=>({
-    id:`desktop-${metric}`,label,platform:"desktop",component:type,mode:"tier",metric:label,unit:"分",powerLabel:"标称功耗不用于生成曲线",
+  const geek: BenchmarkSet[] = ([['cpu','gb7_multi','Geekbench 7 多核'],['cpu','gb7_single','Geekbench 7 单核'],['gpu','gb7_opencl','Geekbench 7 OpenCL']] as const).map(([type,metric,label])=>({
+    id:`desktop-${metric}`,label,platform:"desktop" as Platform,component:type,mode:"tier" as ViewMode,metric:label,unit:"分",powerLabel:"标称功耗不用于生成曲线",
     source:"Geekbench Browser",sourceUrl:`https://browser.geekbench.com/${type==='cpu'?'processor':'opencl'}-benchmarks`,checkedAt:CHECKED_AT,version:"Geekbench 7",
     note:"用户提交成绩汇总快照；不是本站实测或实时全市场排名。OpenCL 衡量计算任务，不代表游戏帧率。",
     rows:chips.filter(c=>c.platform==='desktop' && c.type===type && c[metric]!=null).map(c=>({id:c.id,hardwareId:c.id,name:c.name,brand:c.brand,score:c[metric]!,points:[]})).sort((a,b)=>b.score-a.score),
   }));
+  // 工作簿参考成绩；无成绩型号仅进入全量规格库。
+  const cpuSets: BenchmarkSet[] = (["desktop", "mobile"] as const).flatMap(platform =>
+    ([['cpuz_composite','综合'],['cpuz_multi','多核']] as const).map(([metric,label]) => ({
+      id:`ladder-cpuz-${metric === 'cpuz_composite' ? 'composite' : 'multi'}${platform === 'mobile' ? '-mobile' : ''}`,
+      label:`CPU-Z ${label}（${platform === 'desktop' ? '桌面' : '笔记本'}天梯表）`,
+      platform,component:"cpu",mode:"tier",metric:`CPU-Z ${label}`,unit:"分",powerLabel:"天梯表标称功耗不用于生成曲线",
+      source:"天梯图综合全世代（用户提供）",sourceUrl:"https://www.cpu-z.com/bench/",checkedAt:LADDER_CHECKED_AT,version:"CPU-Z Bench",
+      note:"仅比较同平台的表内参考成绩，不代表本站实测；不同整机的散热、内存与功耗设定仍会影响成绩。",
+      rows:ladderCpus.filter(c=>c.platform===platform).map(c=>({id:c.id,name:c.name,brand:c.brand,score:c[metric],points:[]})).sort((a,b)=>b.score-a.score),
+    })));
+  const ladderSets: BenchmarkSet[] = [
+    ...cpuSets,
+    { id:"ladder-tdmark-ts",label:"3DMark Time Spy（天梯表）",platform:"desktop",component:"gpu",mode:"tier",
+      metric:"3DMark Time Spy",unit:"分",powerLabel:"天梯表 TDP 不用于生成曲线",
+      source:"天梯图综合全世代（用户提供）",sourceUrl:"https://www.3dmark.com/search",checkedAt:LADDER_CHECKED_AT,version:"3DMark Time Spy",
+      note:"仅统计表内有 Time Spy 参考成绩的桌面显卡；缺失值不使用理论性能分补齐。",
+      rows:ladderGpus.filter(g=>!g.ts_estimated && g.platform==='desktop').map(g=>({id:g.id,name:g.name,brand:g.brand,score:g.tdmark_ts,points:[]})).sort((a,b)=>b.score-a.score) },
+    { id:"ladder-tdmark-integrated",label:"3DMark Time Spy · 核显（天梯表）",platform:"desktop",component:"gpu",mode:"tier",
+      metric:"3DMark Time Spy",unit:"分",powerLabel:"天梯表 TDP 不用于生成曲线",
+      source:"天梯图综合全世代（用户提供）",sourceUrl:"https://www.3dmark.com/search",checkedAt:LADDER_CHECKED_AT,version:"3DMark Time Spy",
+      note:"核显 / APU 的表内 Time Spy 参考成绩；共享内存与驱动策略影响成绩，不与独显混为一榜。",
+      rows:ladderGpus.filter(g=>!g.ts_estimated && g.platform==='integrated').map(g=>({id:g.id,name:g.name,brand:g.brand,score:g.tdmark_ts,points:[]})).sort((a,b)=>b.score-a.score) },
+  ];
+  return [...ladderSets, ...geek];
 }
 
 export function socpkSets(snapshot: SocpkSnapshot): BenchmarkSet[] {

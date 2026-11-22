@@ -1,7 +1,7 @@
 import { useResource } from "../hooks/useResource";
 import { ErrorState, LoadingState, EmptyState } from "../components/AsyncState";
 import PageHeader from "../components/PageHeader";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
@@ -19,7 +19,7 @@ interface Metrics {
 
 /** 运营后台：指标概览、工单中心与派单（方案 6 节 MVP 子集）。 */
 export default function Admin() {
-  const { me, loading, hasRole } = useAuth();
+  const { loading, hasRole } = useAuth();
   const [busy, setBusy] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
   const [dateFrom, setDateFrom] = useState(""),
@@ -99,7 +99,7 @@ export default function Admin() {
           />
         </div>
       </div>
-      {msg && <div className="alert-ok">{msg}</div>}
+      {msg && <div className="alert-ok" role="status" aria-live="polite">{msg}</div>}
       {err && (
         <div className="error-box" role="alert">
           {err}
@@ -117,34 +117,13 @@ export default function Admin() {
       {metrics && (
         <div className="card">
           <h4>运营概览</h4>
-          <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-            {Object.entries(metrics.tickets_by_status).map(([s, n]) => (
-              <div key={s}>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>{n}</div>
-                <div className="small muted">{TICKET_STATUS_LABEL[s] ?? s}</div>
-              </div>
-            ))}
-            <div>
-              <div
-                style={{ fontSize: 24, fontWeight: 700, color: "var(--ok)" }}
-              >
-                {metrics.tickets_fixed_user_confirmed}
-              </div>
-              <div className="small muted">用户确认修复</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 24, fontWeight: 700 }}>
-                {metrics.sessions_resolved}
-              </div>
-              <div className="small muted">自助解决会话</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 24, fontWeight: 700 }}>
-                {metrics.sessions_handoff}
-              </div>
-              <div className="small muted">转人工会话</div>
-            </div>
+          <div className="metric-grid">
+            <div><span>创建的排障会话</span><strong>{metrics.sessions_total}</strong><small>按所选日期范围统计</small></div>
+            <div><span>用户确认修复</span><strong style={{color:"var(--ok)"}}>{metrics.tickets_fixed_user_confirmed}</strong><small>实际结果与用户验收一致</small></div>
+            <div><span>自助解决会话</span><strong>{metrics.sessions_resolved}</strong><small>用户已确认恢复</small></div>
+            <div><span>转人工会话</span><strong>{metrics.sessions_handoff}</strong><small>交由维修人员接续</small></div>
           </div>
+          <div className="status-overview" role="group" aria-label="按工单状态查看">{Object.entries(metrics.tickets_by_status).map(([status,count])=><button key={status} aria-pressed={statusFilter===status} onClick={()=>setStatusFilter(statusFilter===status?"":status)}><span>{TICKET_STATUS_LABEL[status]??status}</span><strong>{count}</strong></button>)}</div>
           <p className="small muted">{metrics.note}</p>
           <p className="small">
             开始排障会话数：{metrics.sessions_total}；服务评价：

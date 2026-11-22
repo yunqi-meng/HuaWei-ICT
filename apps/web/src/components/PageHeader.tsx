@@ -13,7 +13,7 @@ export default function PageHeader({
   return (
     <header className="page-header">
       <div>
-        {eyebrow && <div className="eyebrow">{eyebrow}</div>}
+        {eyebrow && <div className="eyebrow page-section-label"><span />{eyebrow.split(" / ").at(-1)}</div>}
         <h1>{title}</h1>
         {description && <p className="muted">{description}</p>}
       </div>

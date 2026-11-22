@@ -12,6 +12,8 @@ export interface Guide {
   difficulty: string;
   source_url: string;
   reviewed_at: string | null;
+  auto_collected?: boolean;
+  reviewer?: string | null;
   content?: string;
 }
 
@@ -27,6 +29,7 @@ export interface SessionView {
   end_reason: string | null;
   symptom_text: string;
   symptom_category: string;
+  mode?: string;
   risk_flags: string[];
   failed_count: number;
   handoff_reason: string;

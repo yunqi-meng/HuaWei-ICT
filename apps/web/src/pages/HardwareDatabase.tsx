@@ -66,10 +66,12 @@ export default function HardwareDatabase() {
         title="每一款芯片，都了解一点。"
         description="查询 CPU / GPU 的规格与基准测试参考成绩，选择同类型芯片并排比较。"
         actions={
+          <><Link className="btn" to="/hardware/catalog">全量规格库</Link><Link className="btn" to="/hardware/motherboards">主板与芯片组</Link>
           <Link className="btn" to="/hardware/rankings">
             <Icon name="chart" size={17} />
             查看排行榜
           </Link>
+          </>
         }
       />
       <HardwareSources />

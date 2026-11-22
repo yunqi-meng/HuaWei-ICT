@@ -4,23 +4,6 @@
 """
 from __future__ import annotations
 
-# ---- 角色 ----
-ROLE_USER = "user"
-ROLE_STAFF = "staff"
-ROLE_ADMIN = "admin"
-ALL_ROLES = (ROLE_USER, ROLE_STAFF, ROLE_ADMIN)
-
-# ---- 诊断会话状态机 ----
-SESSION_STATES = ("INTAKE", "CLARIFY", "RETRIEVE", "GUIDE", "VERIFY", "RESOLVED", "HANDOFF", "PAUSED")
-
-# ---- 预约状态机 ----
-APPT_STATUSES = ("HELD", "CONFIRMED", "CHECKED_IN", "COMPLETED", "EXPIRED", "CANCELLED", "NO_SHOW")
-
-# ---- 工单状态机（方案 10.1） ----
-TICKET_STATUSES = (
-    "OPEN", "ACCEPTED", "IN_SERVICE", "WAITING_USER",
-    "WAITING_EXTERNAL", "AWAITING_VERIFICATION", "CLOSED", "CANCELLED",
-)
 
 ALLOWED_TRANSITIONS: dict[str, set[str]] = {
     "OPEN": {"ACCEPTED", "CANCELLED"},

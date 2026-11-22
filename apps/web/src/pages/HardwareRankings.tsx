@@ -130,7 +130,7 @@ export default function HardwareRankings() {
                 data={chartData}
                 margin={{ top: 8, right: 18, bottom: 8, left: 0 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis type="number" fontSize={14} />
                 <YAxis
                   type="category"
@@ -187,12 +187,12 @@ export default function HardwareRankings() {
 
           <div className="card">
             <h3>完整排名</h3>
-            <div className="table-scroll">
+            <div className="table-scroll" tabIndex={0} role="region" aria-label="可横向滚动的数据表">
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr
                     style={{
-                      borderBottom: "2px solid #eee",
+                      borderBottom: "2px solid var(--border)",
                       textAlign: "left",
                     }}
                   >
@@ -211,7 +211,7 @@ export default function HardwareRankings() {
                   {items.map((c, i) => (
                     <tr
                       key={c.id}
-                      style={{ borderBottom: "1px solid #f0f0f0" }}
+                      style={{ borderBottom: "1px solid var(--border)" }}
                     >
                       <td
                         style={{

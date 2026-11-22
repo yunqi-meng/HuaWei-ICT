@@ -18,7 +18,7 @@ from ...security import hold_expiry, new_checkin_code, new_id, utcnow
 from ...workflow import notify
 
 HOLD_MINUTES = 5
-ACTIVE_APPT = ("HELD", "CONFIRMED", "CHECKED_IN")
+
 
 
 def _available_slot(conn, slot_id: str) -> dict:

@@ -5,9 +5,6 @@ from functools import lru_cache
 from pathlib import Path
 
 CATALOG_PATH = Path(__file__).resolve().parents[4] / "web/src/data/hardwareCatalog.json"
-_CATALOG = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
-CPUS = [c for c in _CATALOG["chips"] if c["type"] == "cpu"]
-GPUS = [c for c in _CATALOG["chips"] if c["type"] == "gpu"]
 METRICS = {"cpu": ("gb7_single", "gb7_multi"), "gpu": ("gb7_opencl",)}
 
 
@@ -21,7 +18,9 @@ def get_all_chips():
 
 
 def get_chip(chip_id: str):
-    return next((c for c in get_all_chips() if c["id"] == chip_id), None)
+    chip = next((c for c in _catalog_at_version(CATALOG_PATH.stat().st_mtime_ns)
+                 if c["id"] == chip_id), None)
+    return deepcopy(chip)
 
 
 def get_rankings(chip_type: str = "cpu", metric: str = "gb7_multi"):
@@ -35,4 +34,5 @@ def get_rankings(chip_type: str = "cpu", metric: str = "gb7_multi"):
 
 
 def compare_chips(chip_ids: list[str]):
-    return [chip for cid in chip_ids if (chip := get_chip(cid))]
+    by_id = {c["id"]: c for c in _catalog_at_version(CATALOG_PATH.stat().st_mtime_ns)}
+    return deepcopy([by_id[cid] for cid in chip_ids if cid in by_id])

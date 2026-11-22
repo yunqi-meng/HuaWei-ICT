@@ -56,7 +56,7 @@ describe('SOCPK 性能对比',()=>{
     expect(screen.getByText('未找到匹配型号')).toBeTruthy();expect(screen.getByRole('table').querySelectorAll('tbody tr')).toHaveLength(6);
     await userEvent.click(screen.getByRole('button',{name:'清空选择'}));
     expect(screen.queryByRole('table')).toBeNull();expect(screen.getByText('从一个型号开始探索')).toBeTruthy();
-  });
+  },15000); // 六次选择、搜索和清空涵盖完整交互链，允许较慢的本地 DOM 环境。
   it('功耗超出数据范围时显示缺失值，不伪造零分',async()=>{
     open('/perf?mode=curve&dataset=cpu-gb6');await loaded();
     fireEvent.change(screen.getByRole('spinbutton',{name:'对比功耗 W'}),{target:{value:'9999'}});
@@ -73,7 +73,7 @@ describe('SOCPK 性能对比',()=>{
     expect((screen.getByRole('spinbutton',{name:'对比功耗 W'}) as HTMLInputElement).value).toBe('80');
   });
   it('品牌筛选与清空选择不改变榜单顺序，比较可以更换基准',async()=>{
-    open('/perf?platform=desktop');
+    open('/perf?platform=desktop&dataset=desktop-gb7_multi');
     await userEvent.click(screen.getByRole('button',{name:/加入对比 AMD Ryzen 9 9950X/}));
     await userEvent.click(screen.getByRole('button',{name:/加入对比 Intel Core Ultra 9 285K/}));
     const baseline=screen.getByRole('combobox',{name:'对比基准型号'});

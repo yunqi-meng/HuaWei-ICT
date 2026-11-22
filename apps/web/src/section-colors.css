@@ -1,0 +1,111 @@
+/* Functional accents: warm orange family, distinct page identities. */
+:root[data-accent="diagnosis"] {
+  --primary:#ea580c; --primary-dark:#c2410c; --primary-soft:#ffedd5;
+  --bg:#fdf8f2; --surface-soft:#fbf3e9; --border:#f0e0cc; --action-border:#f3c99b; --focus:#f97316;
+}
+:root[data-accent="performance"] {
+  --primary:#d97706; --primary-dark:#b45309; --primary-soft:#fef3c7;
+  --bg:#fdf9ef; --surface-soft:#faf3e2; --border:#eee1c2; --action-border:#eccf96; --focus:#f59e0b;
+}
+:root[data-accent="hardware"] {
+  --primary:#b45309; --primary-dark:#92400e; --primary-soft:#fff4e6;
+  --bg:#fbf5ec; --surface-soft:#f8efe1; --border:#ecdfc9; --action-border:#e3bf8e; --focus:#d97706;
+}
+:root[data-accent="quality"] {
+  --primary:#c2410c; --primary-dark:#9a3412; --primary-soft:#ffece5;
+  --bg:#fbf4ee; --surface-soft:#f9eee5; --border:#eedbcd; --action-border:#e8b598; --focus:#ea580c;
+}
+:root[data-accent="knowledge"] {
+  --primary:#ca8a04; --primary-dark:#a16207; --primary-soft:#fef9e7;
+  --bg:#fbf7ea; --surface-soft:#f9f3dd; --border:#eae0bd; --action-border:#e5cf8d; --focus:#d9a406;
+}
+:root[data-accent="service"] {
+  --primary:#f97316; --primary-dark:#ea580c; --primary-soft:#fff1e5;
+  --bg:#fef8f1; --surface-soft:#fdf1e4; --border:#f2e2ce; --action-border:#f6c99b; --focus:#f97316;
+}
+:root[data-accent="personal"] {
+  --primary:#9a3412; --primary-dark:#7c2d12; --primary-soft:#fdeee5;
+  --bg:#f9f2ec; --surface-soft:#f6ecdf; --border:#e8d6c4; --action-border:#dcae85; --focus:#b45309;
+}
+:root[data-accent="operations"] {
+  --primary:#a16207; --primary-dark:#854d0e; --primary-soft:#fdefd8;
+  --bg:#f8f3e8; --surface-soft:#f5eeda; --border:#e6dab9; --action-border:#d9c28c; --focus:#ca8a04;
+}
+/* Matching dark palettes keep text and selection contrast readable. */
+:root[data-theme="dark"][data-accent="diagnosis"] {
+  --primary:#fb923c; --primary-dark:#fdba74; --primary-soft:#3a2110;
+  --bg:#181009; --card:#221910; --surface-soft:#2b1f13; --border:#3e2d1b; --action-border:#5f4227; --focus:#fb923c;
+}
+:root[data-theme="dark"][data-accent="performance"] {
+  --primary:#fbbf24; --primary-dark:#fcd34d; --primary-soft:#382a0e;
+  --bg:#171208; --card:#211c10; --surface-soft:#2a2413; --border:#3d3419; --action-border:#5e4d1f; --focus:#fbbf24;
+}
+:root[data-theme="dark"][data-accent="hardware"] {
+  --primary:#d97706; --primary-dark:#f59e0b; --primary-soft:#33230f;
+  --bg:#160f0a; --card:#1f1710; --surface-soft:#281d12; --border:#3a2c1c; --action-border:#584427; --focus:#d97706;
+}
+:root[data-theme="dark"][data-accent="quality"] {
+  --primary:#f97316; --primary-dark:#fb923c; --primary-soft:#361d0d;
+  --bg:#180e08; --card:#231610; --surface-soft:#2c1d13; --border:#402a1a; --action-border:#63421f; --focus:#f97316;
+}
+:root[data-theme="dark"][data-accent="knowledge"] {
+  --primary:#eab308; --primary-dark:#facc15; --primary-soft:#322607;
+  --bg:#151109; --card:#1f1a0e; --surface-soft:#282013; --border:#3c3319; --action-border:#5b4c1e; --focus:#eab308;
+}
+:root[data-theme="dark"][data-accent="service"] {
+  --primary:#fdba74; --primary-dark:#fed7aa; --primary-soft:#3a2110;
+  --bg:#181009; --card:#221810; --surface-soft:#2b1f15; --border:#3e2d1d; --action-border:#5f4227; --focus:#fdba74;
+}
+:root[data-theme="dark"][data-accent="personal"] {
+  --primary:#c98a5f; --primary-dark:#e8b08c; --primary-soft:#2e1d10;
+  --bg:#140e09; --card:#1d150e; --surface-soft:#261b11; --border:#362818; --action-border:#523c22; --focus:#c98a5f;
+}
+:root[data-theme="dark"][data-accent="operations"] {
+  --primary:#d4a24a; --primary-dark:#e8c273; --primary-soft:#2f220c;
+  --bg:#151009; --card:#1f180d; --surface-soft:#282012; --border:#3b3018; --action-border:#574721; --focus:#d4a24a;
+}
+.workspace-link.is-active {
+  color:#c2410c;
+  background:#fff8ef;
+  border-color:#fff8ef;
+}
+.workspace-link.is-active svg,.nav-active-marker { color:#c2410c; }
+.nav-active-marker { background:#c2410c; }
+.page-section-label { color:var(--primary-dark); }
+/* A supporting palette inside summary rows prevents a flat monochrome sheet. */
+.perf-overview>div:nth-child(1),.catalog-summary>span:nth-child(1) { --summary-accent:var(--primary); }
+.perf-overview>div:nth-child(2),.catalog-summary>span:nth-child(2) { --summary-accent:var(--ok); }
+.perf-overview>div:nth-child(3),.catalog-summary>span:nth-child(3) { --summary-accent:#ca8a04; }
+.catalog-summary>span:nth-child(4) { --summary-accent:var(--warn); }
+.perf-overview>div,.catalog-summary>span {
+  border-top:2px solid var(--summary-accent,var(--primary));
+  background:color-mix(in srgb,var(--summary-accent,var(--primary)) 4%,var(--card));
+}
+.metric-grid>div:nth-child(1) { --metric-accent:var(--primary); }
+.metric-grid>div:nth-child(2),.metric-grid>div:nth-child(3) { --metric-accent:var(--ok); }
+.metric-grid>div:nth-child(4) { --metric-accent:var(--warn); }
+.metric-grid>div { border-top:2px solid var(--metric-accent); background:color-mix(in srgb,var(--metric-accent) 5%,var(--card)); }
+.service-diagnosis { --service-accent:#ea580c; }
+.service-hardware { --service-accent:#d97706; }
+.service-campus { --service-accent:#b45309; }
+:root[data-theme="dark"] .service-diagnosis { --service-accent:#fb923c; }
+:root[data-theme="dark"] .service-hardware { --service-accent:#fbbf24; }
+:root[data-theme="dark"] .service-campus { --service-accent:#d97706; }
+.service-card { border-top:2px solid var(--service-accent,var(--primary)); background:color-mix(in srgb,var(--service-accent,var(--primary)) 3%,var(--card)); }
+.service-card .service-icon { color:var(--service-accent); background:color-mix(in srgb,var(--service-accent) 10%,var(--card)); border-color:color-mix(in srgb,var(--service-accent) 20%,var(--border)); }
+.service-card .service-action { color:var(--service-accent); }
+.quick-access>a:nth-child(1) { --quick-accent:var(--ok); }
+.quick-access>a:nth-child(2) { --quick-accent:#d97706; }
+.quick-access>a:nth-child(3) { --quick-accent:#b45309; }
+.quick-access>a:nth-child(4) { --quick-accent:var(--warn); }
+.quick-icon { width:34px; height:34px; flex-shrink:0; display:grid; place-items:center; border-radius:9px; color:var(--quick-accent); background:color-mix(in srgb,var(--quick-accent) 10%,var(--card)); }
+/* The interactive home instrument takes its color from the selected service. */
+.hero-instrument[data-mode="diagnosis"] { --instrument-accent:#ea580c; }
+.hero-instrument[data-mode="hardware"] { --instrument-accent:#d97706; }
+.hero-instrument[data-mode="service"] { --instrument-accent:#b45309; }
+.hero-instrument { border-color:#f0d3ac; }
+.hero-instrument .instrument-tabs button[aria-selected="true"] { color:var(--instrument-accent); border-bottom-color:var(--instrument-accent); }
+.hero-instrument .blueprint-core { color:var(--instrument-accent); border-color:color-mix(in srgb,var(--instrument-accent) 38%,#f0d3ac); background:color-mix(in srgb,var(--instrument-accent) 10%,#fff); box-shadow:none; }
+.hero-instrument .blueprint-traces circle { fill:var(--instrument-accent); }
+.hero-instrument .instrument-flow li>span { color:var(--instrument-accent); border-color:color-mix(in srgb,var(--instrument-accent) 32%,#f0d3ac); }
+.hero-instrument .instrument-action { color:var(--instrument-accent); }

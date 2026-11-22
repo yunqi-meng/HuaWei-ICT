@@ -19,6 +19,8 @@ from .modules.scheduling.admin import router as scheduling_admin_router
 from .modules.tickets.operations import router as operations_router
 from .modules.knowledge.editorial import router as editorial_router
 from .modules.hardware.router import router as hardware_router
+from .modules.hardware.ladder import router as ladder_router
+from .modules.hardware.motherboards import router as motherboards_router
 
 logging.basicConfig(level=logging.INFO)
 settings = get_settings()
@@ -86,5 +88,6 @@ async def validation_handler(request: Request, exc: RequestValidationError):
 
 prefix = "/api/v1"
 for r in (auth_router, knowledge_router, diagnosis_router, scheduling_router, tickets_router,
-          platform_router, scheduling_admin_router, operations_router, editorial_router, hardware_router):
+          platform_router, scheduling_admin_router, operations_router, editorial_router, hardware_router,
+          ladder_router, motherboards_router):
     app.include_router(r, prefix=prefix)

@@ -14,6 +14,8 @@ export default function Login() {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showPassword,setShowPassword]=useState(false);
+  const [capsLock,setCapsLock]=useState(false);
   async function submit() {
     if (busy || loading) return;
     setBusy(true);
@@ -37,11 +39,13 @@ export default function Login() {
     }
   }
   return (
+    <div className="auth-layout">
+      <aside className="auth-introduction"><span className="auth-intro-symbol"><Icon name="chip" size={36}/></span><h2>你的电脑服务，<br/>从这里接续。</h2><p>把设备信息、排查过程和维修记录收在一起，每一次求助都不用从头说起。</p><ul><li><Icon name="monitor" size={18}/><span>记录设备与系统环境</span></li><li><Icon name="tool" size={18}/><span>保存排查步骤与反馈</span></li><li><Icon name="calendar" size={18}/><span>预约义诊，跟进服务进度</span></li></ul><Link to="/guides">先看看常见问题<Icon name="arrow" size={17}/></Link></aside>
     <div className="card auth-card">
       <div className="auth-logo">
         <Icon name="tool" size={25} />
       </div>
-      <div className="eyebrow">WELCOME TO ZHIXIU</div>
+      <div className="eyebrow">连接你的知修工作空间</div>
       <h1>{mode === "login" ? "欢迎回到知修" : "很高兴认识你"}</h1>
       <p className="muted small">
         {mode === "login"
@@ -74,6 +78,7 @@ export default function Login() {
         ))}
       </div>
       <form
+        aria-label={mode==="login"?"登录表单":"注册表单"}
         onSubmit={(event) => {
           event.preventDefault();
           void submit();
@@ -91,9 +96,9 @@ export default function Login() {
           onChange={(event) => setEmail(event.target.value)}
         />
         <label htmlFor="login-password">密码</label>
-        <input
+        <div className="password-field"><input
           id="login-password"
-          type="password"
+          type={showPassword?"text":"password"}
           autoComplete={mode === "login" ? "current-password" : "new-password"}
           placeholder="至少 8 位字符"
           required
@@ -101,7 +106,11 @@ export default function Login() {
           value={password}
           disabled={busy}
           onChange={(event) => setPassword(event.target.value)}
-        />
+          onKeyUp={event=>setCapsLock(event.getModifierState("CapsLock"))}
+          onBlur={()=>setCapsLock(false)}
+          aria-describedby={capsLock?"caps-lock-notice":undefined}
+        /><button type="button" className="password-toggle" aria-label={showPassword?"隐藏密码":"显示密码"} aria-pressed={showPassword} onClick={()=>setShowPassword(value=>!value)}><Icon name={showPassword?"eyeOff":"eye"} size={18}/></button></div>
+        {capsLock&&<p id="caps-lock-notice" className="small password-notice" role="status">大写锁定已开启</p>}
         {mode === "register" && (
           <>
             <label htmlFor="login-name">昵称</label>
@@ -142,6 +151,6 @@ export default function Login() {
       <p className="auth-caption">
         暂时不登录？<Link to="/">返回首页探索</Link>
       </p>
-    </div>
+    </div></div>
   );
 }

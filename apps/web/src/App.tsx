@@ -1,5 +1,5 @@
-import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import {
   TopNav,
   AppFooter,
@@ -8,8 +8,6 @@ import {
   PageErrorBoundary,
 } from "./components/AppLayout";
 import { LoadingState } from "./components/AsyncState";
-import { api } from "./api";
-import { useAuth } from "./auth";
 const Admin = lazy(() => import("./pages/Admin"));
 const Diagnosis = lazy(() => import("./pages/Diagnosis"));
 const GuideDetail = lazy(() => import("./pages/GuideDetail"));
@@ -27,6 +25,9 @@ const KnowledgeAdmin = lazy(() => import("./pages/KnowledgeAdmin"));
 const SystemAdmin = lazy(() => import("./pages/SystemAdmin"));
 const Account = lazy(() => import("./pages/Account"));
 const HardwareRankings = lazy(() => import("./pages/HardwareRankings"));
+const HardwareLadder = lazy(() => import("./pages/HardwareLadder"));
+const HardwareCatalog = lazy(() => import("./pages/HardwareCatalog"));
+const Motherboards = lazy(() => import("./pages/Motherboards"));
 const HardwareDatabase = lazy(() => import("./pages/HardwareDatabase"));
 const HardwareCompare = lazy(() => import("./pages/HardwareCompare"));
 const HardwareDetail = lazy(() => import("./pages/HardwareDetail"));
@@ -36,12 +37,6 @@ const BuildQuality = lazy(() => import("./pages/BuildQuality"));
 
 export default function App() {
   const location = useLocation();
-  const [demo, setDemo] = useState(false);
-  useEffect(() => {
-    api<{ demo: boolean }>("/public-config")
-      .then((c) => setDemo(c.demo))
-      .catch(() => undefined);
-  }, []);
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -49,12 +44,7 @@ export default function App() {
       </a>
       <RouteEffects />
       <TopNav />
-      {demo && (
-        <div className="demo-banner">
-          本地演示环境 · 示例账号与知识仅用于体验流程
-        </div>
-      )}
-      <main className="container" id="main-content">
+      <main className="container" id="main-content" tabIndex={-1} data-section={location.pathname.split("/")[1] || "home"}>
         <PageErrorBoundary key={location.pathname}>
           <Suspense fallback={<LoadingState />}>
             <Routes>
@@ -80,6 +70,9 @@ export default function App() {
               <Route path="/guides/:id" element={<GuideDetail />} />
               <Route path="/hardware" element={<HardwareDatabase />} />
               <Route path="/hardware/rankings" element={<HardwareRankings />} />
+              <Route path="/hardware/ladder" element={<HardwareLadder />} />
+              <Route path="/hardware/catalog" element={<HardwareCatalog />} />
+              <Route path="/hardware/motherboards" element={<Motherboards />} />
               <Route path="/hardware/compare" element={<HardwareCompare />} />
               <Route path="/hardware/:id" element={<HardwareDetail />} />
               <Route

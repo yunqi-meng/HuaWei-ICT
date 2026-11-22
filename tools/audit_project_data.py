@@ -72,6 +72,44 @@ def audit(database=None):
         check(all(https(s["url"]) and urlparse(s["url"]).hostname == "support.microsoft.com" and urlparse(s["url"]).path != "/zh-cn/windows" for s in flow["source_refs"]), f"{p.name}: 缺少对应支持文章")
     report = {"chips":len(chips),"benchmarked_models":benchmarked,"quality_products":len(quality),
               "products_pending":sum(not c["facts"] for c in quality),"verified_photos":len(images),"flows":len(flows)}
+    ladder_path = DATA / "ladderCatalog.json"
+    if ladder_path.exists():
+        ladder = json.loads(ladder_path.read_text(encoding="utf-8"))
+        check(ladder["schema_version"] == 2, "工作簿硬件目录版本不符")
+        for kind, metric_keys in (("cpus", ("cpuz_single", "cpuz_multi", "cpuz_composite")), ("gpus", ("tdmark_ts",))):
+            records = ladder[kind]
+            check(len({c["id"] for c in records}) == len(records), kind + ": 重复型号 ID")
+            check(len({c["source_ref"]["row"] for c in records}) == len(records), kind + ": 重复来源行")
+            for chip in records:
+                check(all(chip[k] is None or (type(chip[k]) in (int, float) and math.isfinite(chip[k]) and chip[k] > 0) for k in metric_keys), chip["id"] + ": 非法参考成绩")
+                check(chip["has_benchmark"] == all(chip[k] is not None for k in metric_keys), chip["id"] + ": 成绩状态不匹配")
+                check(chip["source_ref"]["sheet"] == "全量参数库" and chip["source_ref"]["row"] >= 5, chip["id"] + ": 来源行非法")
+                if kind == "gpus":
+                    check(not chip["ts_estimated"] and "bus_width" not in chip and "bus_gbps" not in chip, chip["id"] + ": 禁止估算 Time Spy 或混用带宽单位")
+        report.update(workbook_cpus=len(ladder["cpus"]), workbook_gpus=len(ladder["gpus"]),
+                      workbook_cpu_scores=sum(c["has_benchmark"] for c in ladder["cpus"]),
+                      workbook_gpu_scores=sum(c["has_benchmark"] for c in ladder["gpus"]))
+    board_path = DATA / "motherboardCatalog.json"
+    if board_path.exists():
+        boards = json.loads(board_path.read_text(encoding="utf-8"))
+        check(boards["schema_version"] == 1, "主板目录版本不符")
+        by_id = {c["id"]: c for c in boards["chipsets"]}
+        check(len(by_id) == len(boards["chipsets"]), "重复芯片组 ID")
+        products = boards["motherboards"]
+        check(len({b["id"] for b in products}) == len(products), "重复主板 ID")
+        for board in products:
+            chip = by_id.get(board["chipset_id"])
+            check(chip and board["chipset"] in chip["codes"] and board["socket"] == chip["socket"], board["id"] + ": 芯片组关联错误")
+            check(not board["is_preview"], board["id"] + ": 预告占位行不得变成主板产品")
+            check(board["reference_price_cny"] is None or board["reference_price_cny"] > 0, board["id"] + ": 非法历史参考价")
+            if board["image"]:
+                photo = (PUBLIC / board["image"].lstrip("/")).resolve()
+                check(photo.is_relative_to(PUBLIC.resolve()) and photo.is_file(), board["id"] + ": 图片缺失或越界")
+                if photo.is_relative_to(PUBLIC.resolve()) and photo.is_file():
+                    check(hashlib.sha256(photo.read_bytes()).hexdigest() == board["image_sha256"], board["id"] + ": 图片与导入时不一致")
+        report.update(workbook_motherboards=len(products), workbook_chipsets=len(by_id),
+                      workbook_board_images=sum(bool(b["image"]) for b in products),
+                      preview_chipsets=sum(c["is_preview"] for c in boards["chipsets"]))
     socpk_path = DATA / "socpkCatalog.json"
     if socpk_path.exists():
         socpk = json.loads(socpk_path.read_text(encoding="utf-8"))

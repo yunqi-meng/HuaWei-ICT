@@ -5,7 +5,7 @@ from datetime import date
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field
 
-from ...db import q_all, q_one, run, tx
+from ...db import q_all, q_one, tx
 from ...deps import (bad_request, csrf_protect, forbidden, get_current_user,
                      not_found, require_roles, user_roles)
 from ...models import OUTCOMES

@@ -30,7 +30,12 @@ export default function GuideDetail() {
       <article className="card">
         <Markdown text={guide.content || "暂无正文内容"} />
         <div className="notice subtle" style={{ marginTop: 28 }}>
-          {guide.reviewed_at ? `审核日期：${guide.reviewed_at.slice(0, 10)}` : "待人工复核：当前内容未提供人工审核记录"} · 来源：
+          {guide.reviewed_at
+            ? `审核日期：${guide.reviewed_at.slice(0, 10)}`
+            : guide.auto_collected
+              ? "自动采集：未人工复核（原始资料来自厂商官方支持）"
+              : "待人工复核：当前内容未提供人工审核记录"}{" "}
+          · 来源：
           {/^https?:\/\//i.test(guide.source_url) ? (
             <a
               href={guide.source_url}

@@ -39,6 +39,7 @@ def session_view(s: dict) -> dict:
         "id": s["id"], "state": s["state"], "end_reason": s["end_reason"],
         "device_id": s["device_id"], "facts": s["facts"],
         "symptom_text": s["symptom_text"], "symptom_category": s["symptom_category"],
+        "mode": "model" if s["facts"].get("ai_mode") else "flow",
         "risk_flags": s["risk_flags"], "failed_count": s["failed_count"],
         "handoff_reason": s["handoff_reason"], "tried_steps": s["tried_steps"],
         "version": s["version"], "current_step": step,
@@ -79,10 +80,15 @@ def get_session(session_id: str, user: dict = Depends(get_current_user)):
 
 @router.post("/{session_id}/messages", dependencies=[Depends(csrf_protect)])
 def post_feedback(session_id: str, payload: FeedbackIn, user: dict = Depends(get_current_user)):
-    _own_session(session_id, user)
-    s = diag.submit_feedback(
-        session_id, option_key=payload.option_key, text=payload.text,
-        client_message_id=payload.client_message_id, expected_version=payload.version)
+    current = _own_session(session_id, user)
+    if current["facts"].get("ai_mode") and current["state"] in ("GUIDE", "CLARIFY"):
+        s = diag.submit_model_feedback(
+            session_id, option_key=payload.option_key, text=payload.text,
+            client_message_id=payload.client_message_id, expected_version=payload.version)
+    else:
+        s = diag.submit_feedback(
+            session_id, option_key=payload.option_key, text=payload.text,
+            client_message_id=payload.client_message_id, expected_version=payload.version)
     return session_view(s)
 
 

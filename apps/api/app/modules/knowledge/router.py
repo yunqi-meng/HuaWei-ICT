@@ -8,9 +8,9 @@ import json
 from fastapi import APIRouter, Depends, Query
 
 from ...db import q_all, q_one, run
+from ...content_policy import reviewed_content_clause
 from ...deps import csrf_protect, get_current_user, not_found, require_roles
 from ...security import utcnow, new_id
-from ..integrations.llm import get_llm
 
 router = APIRouter(tags=["knowledge"])
 
@@ -27,6 +27,8 @@ def guide_view(row: dict, full: bool = False) -> dict:
         "difficulty": app.get("difficulty", "easy"),
         "source_url": (app.get("source_refs") or [{}])[0].get("url", row["source_url"]),
         "reviewed_at": row["reviewed_at"],
+        "auto_collected": bool(app.get("auto_collected")),
+        "reviewer": row.get("reviewer"),
     }
     if full:
         view["content"] = row["content"]
@@ -35,7 +37,7 @@ def guide_view(row: dict, full: bool = False) -> dict:
 
 _PUBLISHED_SQL = (
     "SELECT v.id AS version_id, v.version_no, v.content, v.applicability, v.reviewed_at, "
-    "d.id AS doc_id, d.title, d.category, d.source_url "
+    "d.id AS doc_id, d.title, d.category, d.source_url, d.reviewer "
     "FROM knowledge_versions v JOIN knowledge_documents d ON d.id = v.document_id "
     "WHERE v.status = 'published' AND v.visibility = 'public'"
 )
@@ -43,7 +45,7 @@ _PUBLISHED_SQL = (
 
 @router.get("/guides")
 def list_guides(category: str | None = Query(default=None), q: str | None = Query(default=None)):
-    sql = _PUBLISHED_SQL
+    sql = _PUBLISHED_SQL + reviewed_content_clause("v")
     params: list = []
     if category:
         sql += " AND d.category = ?"
@@ -59,7 +61,7 @@ def list_guides(category: str | None = Query(default=None), q: str | None = Quer
 
 @router.get("/guides/{doc_id}")
 def guide_detail(doc_id: str):
-    row = q_one(_PUBLISHED_SQL + " AND d.id = ? ORDER BY v.version_no DESC LIMIT 1", (doc_id,))
+    row = q_one(_PUBLISHED_SQL + reviewed_content_clause("v") + " AND d.id = ? ORDER BY v.version_no DESC LIMIT 1", (doc_id,))
     if not row:
         raise not_found("指南不存在或未发布")
     return guide_view(row, full=True)
@@ -78,7 +80,8 @@ def search_knowledge(q: str = Query(min_length=1, max_length=200),
 def list_published_flows():
     rows = q_all(
         "SELECT f.key AS flow_key, f.title, f.category, v.version_no, v.reviewer "
-        "FROM flow_versions v JOIN flows f ON f.id = v.flow_id WHERE v.status = 'published'")
+        "FROM flow_versions v JOIN flows f ON f.id = v.flow_id WHERE v.status = 'published'"
+        + reviewed_content_clause("v"))
     return rows
 
 

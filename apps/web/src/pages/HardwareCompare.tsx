@@ -5,7 +5,7 @@ import PageHeader from "../components/PageHeader";
 import HardwareSources from "../components/HardwareSources";
 import { LoadingState, ErrorState, EmptyState } from "../components/AsyncState";
 import { CPU_METRICS, GPU_METRICS, formatValue, type Chip } from "../data/hardware";
-const COLORS = ["#c64a0b", "#3979a9", "#7553b5", "#b45c8c", "#708532", "#356c66"];
+const COLORS = ["#377eea", "#008da6", "#8b62d9", "#d26588", "#8a8e27", "#158b76"];
 export default function HardwareCompare() {
   const [params] = useSearchParams();
   const ids = [...new Set((params.get("ids") || "").split(",").filter(Boolean))];
@@ -31,7 +31,7 @@ export default function HardwareCompare() {
   return <div>
     <PageHeader title="硬件对比" description="同版本成绩并排比较；缺失成绩不按零分处理。" actions={<Link className="btn" to="/hardware">重新选择 →</Link>} />
     <HardwareSources />
-    <section className="card table-scroll"><table><thead><tr><th>参数</th>{items.map(c => <th key={c.id}><Link to={`/hardware/${c.id}`}>{c.name} ↗</Link></th>)}</tr></thead>
+    <section className="card table-scroll" tabIndex={0} role="region" aria-label="可横向滚动的数据表"><table><thead><tr><th>参数</th>{items.map(c => <th key={c.id}><Link to={`/hardware/${c.id}`}>{c.name} ↗</Link></th>)}</tr></thead>
       <tbody>{fields.map(([label,key]) => <tr key={key}><th>{label}</th>{items.map(c => <td key={c.id}>{formatValue(value(c,key))}</td>)}</tr>)}</tbody></table></section>
     {!common.length && <section className="card"><EmptyState title="缺少可供所有所选型号比较的成绩" description="仍可比较上方规格。只有同版本、来源明确且完整的测试指标才生成图表。" /></section>}
     {common.map(m => <section className="card" key={m.key}><h2>{m.label}</h2><ResponsiveContainer width="100%" height={320}>

@@ -1,3 +1,4 @@
+import WorkflowProgress from "../components/WorkflowProgress";
 import DirectRepairRequest from "../components/DirectRepairRequest";
 import PageHeader from "../components/PageHeader";
 import { LoadingState } from "../components/AsyncState";
@@ -234,7 +235,7 @@ export default function NewAppointment() {
       <div className="card">
         <h2>{rescheduling ? "改期成功" : "预约已确认"}</h2>
         {appointmentSummary(done)}
-        <div className="alert-ok">
+        <div className="alert-ok" role="status" aria-live="polite">
           到场签到码：<strong>{done.checkin_code}</strong>
         </div>
         <p className="small muted">
@@ -256,6 +257,12 @@ export default function NewAppointment() {
         title={rescheduling ? "更改预约时段" : "预约人工义诊"}
         description="确认活动地点与时间，保留名额后填写联系信息完成预约。"
       />
+      <WorkflowProgress label="预约进度" steps={[
+        {label:"问题工单",state:"done"},
+        {label:"选择时段",state:hold?"done":"current"},
+        {label:"填写联系信息",state:hold?"current":"upcoming"},
+        {label:"确认预约",state:"upcoming"},
+      ]}/>
       {err && (
         <div className="error-box" role="alert">
           {err}

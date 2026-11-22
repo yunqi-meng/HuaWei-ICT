@@ -1,0 +1,6 @@
+# Offline Excel import and knowledge collection tooling.
+openpyxl>=3.1,<4
+Pillow>=11,<13
+httpx>=0.27
+beautifulsoup4>=4.15
+lxml>=6.1

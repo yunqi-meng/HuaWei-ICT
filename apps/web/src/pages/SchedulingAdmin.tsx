@@ -145,7 +145,7 @@ export default function SchedulingAdmin() {
           {err}
         </div>
       )}
-      {msg && <div className="alert-ok">{msg}</div>}
+      {msg && <div className="alert-ok" role="status" aria-live="polite">{msg}</div>}
       <details className="card">
         <summary>新增服务场地</summary>
         <label htmlFor="schedulingadmin-field-1">场地名称</label>

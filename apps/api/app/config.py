@@ -36,6 +36,12 @@ class Settings:
         self.maas_embedding_model = e("MAAS_EMBEDDING_MODEL", "")
         self.maas_rerank_model = e("MAAS_RERANK_MODEL", "")
         self.model_provider = e("MODEL_PROVIDER", "openai-compatible")
+        # 向量化/重排可指向独立服务（例如本机 Ollama）；未单独配置时沿用 MaaS 主地址与密钥。
+        self.embedding_base_url = e("EMBEDDING_BASE_URL", "") or self.maas_base_url
+        self.embedding_api_key = e("EMBEDDING_API_KEY", "") or self.maas_api_key
+        # 重排默认复用向量化服务（同属检索链路），避免误用对话模型的地址与密钥。
+        self.rerank_base_url = e("RERANK_BASE_URL", "") or self.embedding_base_url
+        self.rerank_api_key = e("RERANK_API_KEY", "") or self.embedding_api_key
 
         self.obs_enabled = e("OBS_ENABLED", "false").lower() == "true"
         self.upload_dir = e("UPLOAD_DIR", "./uploads")
@@ -50,7 +56,7 @@ class Settings:
         self.smtp_password = e("SMTP_PASSWORD", "")
         self.smtp_from = e("SMTP_FROM", "")
         self.smtp_starttls = e("SMTP_STARTTLS", "true").lower() == "true"
-        self.auto_seed = e("AUTO_SEED", "true").lower() == "true"
+        self.auto_seed = e("AUTO_SEED", "false").lower() == "true"
 
     @property
     def cors_origin_list(self) -> list[str]:

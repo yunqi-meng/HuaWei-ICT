@@ -9,10 +9,12 @@ from uuid import uuid4
 from pathlib import Path
 from types import SimpleNamespace
 from PIL import Image
+from fastapi.testclient import TestClient
 import test_booking_http as fixtures
 from helpers import make_ticket, make_user
 from app.config import get_settings
 from app.db import q_all, q_one, run
+from app.main import app
 from app.models import validate_flow_graph
 from app.security import utcnow
 
@@ -205,7 +207,8 @@ class TestV1(unittest.TestCase):
     def test_vector_index_uses_matching_model_and_withdrawn_data_excluded(self):
         from app.modules.knowledge import retrieval
         version = q_one("SELECT id FROM knowledge_versions WHERE status='published' LIMIT 1")["id"]
-        fake = SimpleNamespace(enabled=True, embed=lambda texts: [[1., 0.] for _ in texts], rerank=lambda *_args: None)
+        fake = SimpleNamespace(enabled=True, embedding_enabled=True, rerank_enabled=False,
+                               embed=lambda texts: [[1., 0.] for _ in texts], rerank=lambda *_args: None)
         original = q_all("SELECT id,embedding,index_version FROM knowledge_chunks WHERE version_id=?", (version,))
         with patch.object(get_settings(), "maas_embedding_model", "test-model"), patch.object(retrieval, "get_llm", return_value=fake):
             try:
@@ -313,6 +316,27 @@ class TestV1(unittest.TestCase):
         self.assertEqual(self.client.get("/api/v1/admin/users").status_code, 403)
         admin = self.admin()
         self.assertNotIn("password_hash", admin.get("/api/v1/admin/users").json()[0])
+
+    def test_admin_creates_user_with_roles(self):
+        admin = self.admin()
+        email = f"created_{uuid4().hex[:8]}@test.local"
+        payload = {"email": email, "display_name": "代建调度员",
+                   "password": "Created1234!", "roles": ["dispatcher"], "is_active": True}
+        created = admin.post("/api/v1/admin/users", json=payload)
+        self.assertEqual(created.status_code, 200, created.text)
+        body = created.json()
+        self.assertEqual(body["roles"], ["dispatcher"])
+        self.assertNotIn("password_hash", body)
+        login = TestClient(app).post("/api/v1/auth/login",
+                                     json={"email": email, "password": "Created1234!"})
+        self.assertEqual(login.status_code, 200, login.text)
+        self.assertIn("dispatcher", login.json()["roles"])
+        self.assertEqual(admin.post("/api/v1/admin/users", json=payload).status_code, 409)
+        invalid_role = admin.post("/api/v1/admin/users", json={
+            **payload, "email": f"bad_{uuid4().hex[:8]}@test.local", "roles": ["owner"]})
+        self.assertEqual(invalid_role.status_code, 400)
+        self.assertEqual(self.client.post("/api/v1/admin/users", json={
+            **payload, "email": f"denied_{uuid4().hex[:8]}@test.local"}).status_code, 403)
 
     def test_transfer_waiting_state_and_user_response(self):
         from app.modules.tickets.service import assign

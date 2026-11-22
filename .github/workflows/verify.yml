@@ -1,6 +1,15 @@
 name: Verify Zhixiu
 on: [push, pull_request, workflow_dispatch]
 jobs:
+  hardware-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r tools/requirements.txt
+      - run: python -m unittest discover -s tools/tests -q
   api:
     runs-on: ubuntu-latest
     strategy:
@@ -21,6 +30,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r apps/api/requirements.lock.txt
+      - run: python tools/audit_project_data.py
+        if: matrix.database == 'sqlite'
       - run: python -m unittest discover -s tests -q
         working-directory: apps/api
         env:

@@ -136,7 +136,7 @@ export default function KnowledgeAdmin() {
           {err}
         </div>
       )}
-      {msg && <div className="alert-ok">{msg}</div>}
+      {msg && <div className="alert-ok" role="status" aria-live="polite">{msg}</div>}
       <div className="card">
         <h3>{editing ? "编辑草稿" : "创建草稿"}</h3>
         <label htmlFor="knowledgeadmin-field-1">内容类型</label>

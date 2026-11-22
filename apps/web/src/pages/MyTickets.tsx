@@ -4,6 +4,8 @@ import DirectRepairRequest from "../components/DirectRepairRequest";
 import { LoadingState, ErrorState, EmptyState } from "../components/AsyncState";
 import { useResource } from "../hooks/useResource";
 import { OUTCOME_LABEL, TICKET_STATUS_LABEL, type Ticket } from "../types";
+import { useState } from "react";
+import Icon from "../components/Icon";
 const sessionLabels: Record<string, string> = {
   INTAKE: "接收中",
   CLARIFY: "确认环境",
@@ -22,10 +24,16 @@ const appointmentLabels: Record<string, string> = {
   COMPLETED: "已完成",
 };
 export default function MyTickets() {
+  const [query,setQuery]=useState("");
+  const [filter,setFilter]=useState("all");
   const tickets = useResource<Ticket[]>("/tickets/mine");
   const sessions = useResource<
     { id: string; state: string; symptom_text: string; updated_at: string }[]
   >("/diagnosis-sessions");
+  const visibleTickets=(tickets.data||[]).filter(ticket=>{
+    const closed=["CLOSED","CANCELLED"].includes(ticket.status);
+    return (filter==="all"||(filter==="active"?!closed:closed))&&ticket.title.toLowerCase().includes(query.trim().toLowerCase());
+  });
   return (
     <div>
       <PageHeader
@@ -39,6 +47,7 @@ export default function MyTickets() {
         }
       />
       <DirectRepairRequest />
+      <div className="service-filter-bar"><div className="segmented" role="group" aria-label="工单筛选">{([["all","全部工单"],["active","进行中"],["closed","已结束"]] as const).map(([key,label])=><button key={key} aria-pressed={filter===key} onClick={()=>setFilter(key)}>{label}</button>)}</div><div className="search-field"><Icon name="search" size={17}/><input aria-label="搜索我的工单" placeholder="按问题标题搜索工单" value={query} onChange={event=>setQuery(event.target.value)}/></div></div>
       <div className="section-heading">
         <h2>
           我的工单{" "}
@@ -52,15 +61,15 @@ export default function MyTickets() {
         <ErrorState message={tickets.error} retry={tickets.reload} />
       ) : tickets.loading ? (
         <LoadingState label="正在读取工单…" />
-      ) : !tickets.data?.length ? (
+      ) : !visibleTickets.length ? (
         <section className="card">
           <EmptyState
-            title="还没有工单"
+            title={query||filter!=="all"?"没有符合条件的工单":"还没有工单"}
             description="需要人工协助时，可以使用上方表单预约维修。"
           />
         </section>
       ) : (
-        tickets.data.map((ticket) => (
+        visibleTickets.map((ticket) => (
           <article className="card" key={ticket.id}>
             <div className="section-heading" style={{ marginBottom: 12 }}>
               <h3 style={{ margin: 0 }}>

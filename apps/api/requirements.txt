@@ -10,9 +10,5 @@ psycopg[binary]>=3.2
 redis>=5.0
 boto3>=1.35
 
-# ---- 云端/完整形态可选依赖（本地 MVP 不需要）----
-# SQLAlchemy>=2.0  # PostgreSQL 迁移路径
-# alembic>=1.13
-# psycopg[binary]>=3.2
-# redis>=5.0       # 限流/缓存（未安装时自动降级）
-# pgvector>=0.3    # 向量检索
+# RAG 编排（LangChain LCEL）
+langchain-core>=1.7

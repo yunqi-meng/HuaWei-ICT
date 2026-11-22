@@ -5,6 +5,7 @@ import math
 import re
 import time
 from ...config import get_settings
+from ...content_policy import reviewed_content_clause
 from ...db import q_all, q_one, tx
 from ...security import new_id, utcnow
 from ..integrations.llm import get_llm
@@ -30,9 +31,12 @@ def build_index(version_id):
     if not version or version["status"] != "published":
         return
     chunks = q_all("SELECT id,text FROM knowledge_chunks WHERE version_id=? ORDER BY seq", (version_id,))
-    vectors = get_llm().embed([c["text"] for c in chunks]) if chunks else None
+    llm = get_llm()
+    if not chunks or not llm.embedding_enabled:
+        return  # 未启用向量时仅使用 BM25，属于明确配置的运行方式。
+    vectors = llm.embed([c["text"] for c in chunks])
     if not vectors:
-        return  # BM25 已可用；向量服务不可用不会伪造向量。
+        raise RuntimeError("Embedding service unavailable")  # Worker 保留载荷并重试。
     if len(vectors) != len(chunks) or not valid_vectors(vectors):
         raise ValueError("Invalid embedding response")
     with tx() as conn:
@@ -67,7 +71,8 @@ def search(query, user_id, os_family="windows", category="", limit=5, trace=True
     started = time.monotonic()
     chunks = q_all("SELECT c.*,v.applicability,v.version_no,d.title,d.id AS document_id,d.source_url "
                    "FROM knowledge_chunks c JOIN knowledge_versions v ON v.id=c.version_id "
-                   "JOIN knowledge_documents d ON d.id=v.document_id WHERE v.status='published' AND v.visibility='public'")
+                   "JOIN knowledge_documents d ON d.id=v.document_id WHERE v.status='published' AND v.visibility='public'"
+                   + reviewed_content_clause("v"))
     allowed = []
     for c in chunks:
         app = json.loads(c["applicability"] or "{}")
@@ -80,23 +85,25 @@ def search(query, user_id, os_family="windows", category="", limit=5, trace=True
         allowed.append(c)
     corpus = [collections.Counter(tokens(c["title"] + " " + c["text"])) for c in allowed]
     query_tokens = set(tokens(query))
-    avg_len = sum(sum(c.values()) for c in corpus) / max(1, len(corpus))
+    lengths = [sum(bag.values()) for bag in corpus]
+    avg_len = sum(lengths) / max(1, len(corpus))
+    document_frequency = collections.Counter(token for bag in corpus for token in bag)
     scored = []
-    for c, bag in zip(allowed, corpus):
+    for c, bag, length in zip(allowed, corpus, lengths):
         score = 0.0
         for token in query_tokens:
             frequency = bag[token]
             if not frequency:
                 continue
-            df = sum(token in other for other in corpus)
+            df = document_frequency[token]
             idf = math.log(1 + (len(corpus) - df + .5) / (df + .5))
-            score += idf * frequency * 2.2 / (frequency + 1.2 * (.25 + .75 * sum(bag.values()) / max(1, avg_len)))
+            score += idf * frequency * 2.2 / (frequency + 1.2 * (.25 + .75 * length / max(1, avg_len)))
         if score > 0:
             scored.append((score, c))
     lexical = [c for _, c in sorted(scored, key=lambda x: -x[0])[:20]]
     vector_rank = []
     llm = get_llm()
-    if llm.enabled and any(c["embedding"] for c in allowed):
+    if llm.embedding_enabled and any(c["embedding"] for c in allowed):
         qvs = llm.embed([query])
         if qvs and valid_vectors(qvs):
             qv = qvs[0]
@@ -136,9 +143,13 @@ def search(query, user_id, os_family="windows", category="", limit=5, trace=True
             ranks[c["id"]] += 1 / (60 + rank)
             by_id[c["id"]] = c
     ranked = [by_id[cid] for cid in sorted(ranks, key=lambda cid: -ranks[cid])][:20]
-    reranked = llm.rerank(query, [c["text"] for c in ranked], min(limit, len(ranked))) if ranked and llm.enabled else None
+    reranked = llm.rerank(query, [c["text"][:2000] for c in ranked], min(limit, len(ranked))) if ranked and llm.rerank_enabled else None
     if reranked and len(set(reranked)) == len(reranked) and all(isinstance(i, int) and 0 <= i < len(ranked) for i in reranked):
-        ranked = [ranked[i] for i in reranked]
+        # 重排作为第三路排名参与 RRF 融合，而不是直接覆盖：模型对口语化长查询偶尔会误判，
+        # 直接覆盖会把关键词与向量都认可的结果排到后面。
+        for rank, idx in enumerate(reranked, 1):
+            ranks[ranked[idx]["id"]] += 1 / (60 + rank)
+        ranked = sorted(ranked, key=lambda c: -ranks[c["id"]])
     results = [{"citation_id": c["id"], "document_id": c["document_id"], "version_id": c["version_id"],
                 "version_no": c["version_no"], "title": c["title"],
                 "source_url": (json.loads(c["applicability"] or "{}").get("source_refs") or [{}])[0].get("url", c["source_url"]),

@@ -11,7 +11,7 @@ import { TICKET_STATUS_LABEL, type Ticket } from "../types";
 
 /** 维修工作台：队列、签到核销、检查与维修记录、提交结果待验收（方案 6 节）。 */
 export default function StaffWorkbench() {
-  const { me, loading, hasRole } = useAuth();
+  const { loading, hasRole } = useAuth();
   const queueResource = useResource<Ticket[]>("/staff/tickets");
   const queue = queueResource.data || [];
   const [busy, setBusy] = useState(false);
@@ -130,7 +130,7 @@ export default function StaffWorkbench() {
         title="维修工作台"
         description="处理工单、核销到场签到，记录检查过程与维修结果。"
       />
-      {msg && <div className="alert-ok">{msg}</div>}
+      {msg && <div className="alert-ok" role="status" aria-live="polite">{msg}</div>}
       {err && (
         <div className="error-box" role="alert">
           {err}

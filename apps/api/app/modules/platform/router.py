@@ -4,7 +4,7 @@ import secrets
 from datetime import timedelta
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from fastapi.responses import Response
 from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, Field
@@ -13,7 +13,7 @@ from ...config import get_settings
 from ...db import q_all, q_one, run, tx
 from ...deps import (bad_request, conflict, csrf_protect, forbidden, get_current_user,
                      not_found, require_roles, user_roles)
-from ...security import new_id, token_digest, utcnow
+from ...security import hash_password, new_id, token_digest, utcnow
 from ...workflow import audit, enqueue, throttle
 from ..auth.router import DeviceIn
 
@@ -262,15 +262,61 @@ def users(admin=Depends(require_roles("admin"))):
         "SELECT id,email,display_name,is_active,email_verified FROM users ORDER BY created_at DESC LIMIT 200")]
 
 
+VALID_ROLES = {"user", "staff", "dispatcher", "reviewer", "admin"}
+
+
 class RolesIn(BaseModel):
     roles: list[str]
     is_active: bool = True
 
 
+class AdminUserIn(BaseModel):
+    email: str = Field(min_length=3, max_length=200)
+    display_name: str = Field(min_length=1, max_length=80)
+    password: str = Field(min_length=8, max_length=128)
+    roles: list[str]
+    is_active: bool = True
+
+
+@router.post("/admin/users", dependencies=[Depends(csrf_protect)])
+def create_user(payload: AdminUserIn, admin=Depends(require_roles("admin"))):
+    import re
+
+
+    email = payload.email.strip().lower()
+    display_name = payload.display_name.strip()
+    if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email):
+        raise bad_request("请填写有效邮箱")
+    if not display_name:
+        raise bad_request("显示名称不能为空")
+    if len(payload.password.encode()) > 72:
+        raise bad_request("密码 UTF-8 长度不得超过 72 字节")
+    if not payload.roles or not set(payload.roles) <= VALID_ROLES:
+        raise bad_request("角色非法")
+    if q_one("SELECT id FROM users WHERE email=?", (email,)):
+        raise conflict("该邮箱已注册")
+    uid = new_id("usr")
+    roles = sorted(set(payload.roles))
+    with tx() as conn:
+        if q_one("SELECT id FROM users WHERE email=?", (email,), conn):
+            raise conflict("该邮箱已注册")
+        conn.execute(
+            "INSERT INTO users (id,email,password_hash,display_name,is_active,email_verified,created_at) "
+            "VALUES (?,?,?,?,?,?,?)",
+            (uid, email, hash_password(payload.password), display_name,
+             int(payload.is_active), 1, utcnow().isoformat()))
+        for role in roles:
+            conn.execute("INSERT INTO user_roles VALUES (?,?,?)", (new_id("uro"), uid, role))
+        audit(conn, admin["id"], "account_create", "user", uid,
+              {"email": email, "display_name": display_name, "roles": roles,
+               "is_active": bool(payload.is_active)})
+    return {"id": uid, "email": email, "display_name": display_name, "roles": roles,
+            "is_active": int(payload.is_active), "email_verified": 1}
+
+
 @router.put("/admin/users/{uid}", dependencies=[Depends(csrf_protect)])
 def roles(uid: str, payload: RolesIn, admin=Depends(require_roles("admin"))):
-    valid = {"user", "staff", "dispatcher", "reviewer", "admin"}
-    if not payload.roles or not set(payload.roles) <= valid:
+    if not payload.roles or not set(payload.roles) <= VALID_ROLES:
         raise bad_request("角色非法")
     with tx() as conn:
         if not q_one("SELECT id FROM users WHERE id=?", (uid,), conn):
@@ -297,10 +343,12 @@ def audits(admin=Depends(require_roles("admin"))):
 @router.get("/admin/runtime")
 def runtime(admin=Depends(require_roles("admin"))):
     s = get_settings()
+    from ...readiness import inspect_readiness
     return {"environment": s.app_env, "model_configured": bool(s.maas_enabled and s.maas_base_url and s.maas_api_key),
             "model_provider": s.model_provider, "chat_model": s.maas_chat_model,
             "model_runs": q_all("SELECT status,COUNT(*) AS count,AVG(elapsed_ms) AS avg_ms,SUM(input_tokens) AS input_tokens,SUM(output_tokens) AS output_tokens FROM model_runs GROUP BY status"),
-            "storage": "obs" if s.obs_enabled else "private-local", "email_configured": bool(s.smtp_host),
+            "storage": "obs" if s.obs_enabled else "private-local", "email_configured": bool(s.smtp_host and s.smtp_from),
+            "readiness": inspect_readiness(),
             "database": "postgresql" if s.database_url.startswith("postgres") else "sqlite",
             "jobs": q_all("SELECT status,COUNT(*) AS count FROM outbox GROUP BY status"),
             "retrieval": q_all("SELECT mode,COUNT(*) AS count,AVG(elapsed_ms) AS avg_ms FROM retrieval_traces GROUP BY mode")}

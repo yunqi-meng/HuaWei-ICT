@@ -1,4 +1,5 @@
 import PageHeader from "../components/PageHeader";
+import WorkflowProgress from "../components/WorkflowProgress";
 import Modal from "../components/Modal";
 import { LoadingState, ErrorState } from "../components/AsyncState";
 import { useEffect, useRef, useState } from "react";
@@ -232,6 +233,12 @@ export default function Diagnosis() {
         title="一步一步，找到问题。"
         description="按步骤检查，并反馈你观察到的实际情况。"
       />
+      <WorkflowProgress label="排障进度" steps={[
+        {label:"确认环境",state:session.state==="CLARIFY"||session.state==="INTAKE"?"current":session.facts.os?"done":"upcoming"},
+        {label:"逐步排查",state:session.state==="GUIDE"||session.state==="PAUSED"?"current":session.tried_steps.length?"done":"upcoming"},
+        {label:"验证结果",state:session.state==="VERIFY"?"current":session.state==="RESOLVED"?"done":"upcoming"},
+        {label:session.state==="HANDOFF"?"人工接续":"完成排查",state:session.state==="HANDOFF"?"current":session.state==="RESOLVED"?"done":"upcoming"},
+      ]}/>
       <div className="workbench">
         {/* 左栏：进度与已尝试记录 */}
         <aside className="side-left">
@@ -256,6 +263,10 @@ export default function Diagnosis() {
                   INTAKE: "接收中",
                 }[session.state] ?? session.state}
               </span>
+            </p>
+            <p className="small muted">
+              排查方式：
+              {session.mode === "model" ? "云端模型逐步生成，未经人工审核" : "已审核流程"}
             </p>
           </div>
           <div className="card">
@@ -291,7 +302,7 @@ export default function Diagnosis() {
           </div>
 
           {session.state === "RESOLVED" && (
-            <div className="alert-ok">
+            <div className="alert-ok" role="status" aria-live="polite">
               <strong>问题已解决 ✓</strong>{" "}
               排查记录已保存，可在“我的服务”中查看。
             </div>
@@ -396,7 +407,11 @@ export default function Diagnosis() {
               </p>
             )}
             <p className="muted small">
-              请结合实际环境核对步骤；开发演示流程仍需维修人员复核。系统不会执行任何远程操作。
+              请结合实际环境核对步骤；
+              {session.mode === "model"
+                ? "AI 生成的步骤未经人工审核，与实际情况不符时可随时转人工。"
+                : "开发演示流程仍需维修人员复核。"}
+              系统不会执行任何远程操作。
             </p>
             {evidence.map((r) => (
               <details key={r.citation_id}>

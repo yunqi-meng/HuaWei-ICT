@@ -1,14 +1,17 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import Icon from "./Icon";
+import { createPortal } from "react-dom";
 
 export default function Modal({
   title,
   onClose,
   children,
+  wide = false,
 }: {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  wide?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
@@ -19,7 +22,8 @@ export default function Modal({
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const node = root.current!;
-    node.focus();
+    const initial = node.querySelector<HTMLElement>('[data-autofocus],input:not(:disabled),textarea:not(:disabled),select:not(:disabled)');
+    (initial || node).focus();
     const keydown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -59,10 +63,10 @@ export default function Modal({
       previous?.focus();
     };
   }, []);
-  return (
+  return createPortal(
     <div className="modal-backdrop">
       <div
-        className="card modal-content"
+        className={`card modal-content${wide ? " modal-wide" : ""}`}
         ref={root}
         tabIndex={-1}
         role="dialog"
@@ -81,6 +85,7 @@ export default function Modal({
         </div>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

@@ -36,21 +36,45 @@ class MaaSClient:
     def __init__(self) -> None:
         s = get_settings()
         self._enabled = bool(s.maas_enabled and s.maas_base_url and s.maas_api_key)
-        self._base = s.maas_base_url.rstrip("/").removesuffix("/v1")
+        self._base = self._normalize(s.maas_base_url)
         self._key = s.maas_api_key
         self._chat_model = s.maas_chat_model
         self._embedding_model = s.maas_embedding_model
         self._rerank_model = s.maas_rerank_model
+        # 向量化/重排可用本机服务（例如 Ollama），不要求与对话共用地址或密钥。
+        self._embed_base = self._normalize(s.embedding_base_url)
+        self._embed_key = s.embedding_api_key
+        self._rerank_base = self._normalize(s.rerank_base_url)
+        self._rerank_key = s.rerank_api_key
+        self._embedding_enabled = bool(s.maas_enabled and self._embed_base and self._embedding_model)
+        self._rerank_enabled = bool(s.maas_enabled and self._rerank_base and self._rerank_model)
         self._provider = s.model_provider
         self._timeout = httpx.Timeout(30.0, connect=10.0)
+        self._embed_timeout = httpx.Timeout(120.0, connect=10.0)
         self._slots = BoundedSemaphore(10)
+
+    @staticmethod
+    def _normalize(url: str) -> str:
+        return url.rstrip("/").removesuffix("/v1")
+
+    @staticmethod
+    def _headers(key: str) -> dict:
+        headers = {"Content-Type": "application/json"}
+        if key:
+            headers["Authorization"] = f"Bearer {key}"
+        return headers
 
     @property
     def enabled(self) -> bool:
         return self._enabled
 
-    def _headers(self) -> dict:
-        return {"Authorization": f"Bearer {self._key}", "Content-Type": "application/json"}
+    @property
+    def embedding_enabled(self) -> bool:
+        return self._embedding_enabled
+
+    @property
+    def rerank_enabled(self) -> bool:
+        return self._rerank_enabled
 
     def chat(self, messages: list[dict], *, max_tokens: int = 800) -> str | None:
         """对话补全（OpenAI 兼容接口）。失败返回 None，由调用方降级。"""
@@ -63,7 +87,7 @@ class MaaSClient:
             with httpx.Client(timeout=self._timeout) as client:
                 resp = client.post(
                     f"{self._base}/v1/chat/completions",
-                    headers=self._headers(),
+                    headers=self._headers(self._key),
                     json={"model": self._chat_model, "messages": messages,
                           "max_tokens": max_tokens, "temperature": 0.2,
                           **({"thinking": {"type": "disabled"}, "response_format": {"type": "json_object"}}
@@ -81,15 +105,15 @@ class MaaSClient:
             self._slots.release()
 
     def embed(self, texts: list[str]) -> list[list[float]] | None:
-        if not self._enabled or not self._embedding_model:
+        if not self._embedding_enabled:
             return None
         if not self._slots.acquire(blocking=False):
             return None
         try:
-            with httpx.Client(timeout=self._timeout) as client:
+            with httpx.Client(timeout=self._embed_timeout) as client:
                 resp = client.post(
-                    f"{self._base}/v1/embeddings",
-                    headers=self._headers(),
+                    f"{self._embed_base}/v1/embeddings",
+                    headers=self._headers(self._embed_key),
                     json={"model": self._embedding_model, "input": texts},
                 )
                 resp.raise_for_status()
@@ -102,15 +126,15 @@ class MaaSClient:
 
     def rerank(self, query: str, documents: list[str], top_n: int = 5) -> list[int] | None:
         """返回按相关性排序的文档下标。不可用时调用方走融合排序。"""
-        if not self._enabled or not self._rerank_model:
+        if not self._rerank_enabled:
             return None
         if not self._slots.acquire(blocking=False):
             return None
         try:
             with httpx.Client(timeout=self._timeout) as client:
                 resp = client.post(
-                    f"{self._base}/v1/rerank",
-                    headers=self._headers(),
+                    f"{self._rerank_base}/v1/rerank",
+                    headers=self._headers(self._rerank_key),
                     json={"model": self._rerank_model, "query": query,
                           "documents": documents, "top_n": top_n},
                 )

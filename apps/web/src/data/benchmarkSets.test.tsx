@@ -1,9 +1,21 @@
 import { describe,it,expect } from 'vitest';
 import raw from './socpkCatalog.json';
-import { socpkSets,atPower,comparisonCSV,pointsCSV,type SocpkSnapshot } from './benchmarkSets';
+import { socpkSets,atPower,comparisonCSV,pointsCSV,desktopSets,type SocpkSnapshot } from './benchmarkSets';
+import { rankedLadderCpus } from './ladder';
 const snapshot=raw as unknown as SocpkSnapshot;
 const sets=socpkSets(snapshot);
 describe('SOCPK 来源和测试口径',()=>{
+  it('CPU-Z 按平台分榜，移动成绩仍可从笔记本入口查询',()=>{
+    const benchmarks=desktopSets().filter(s=>s.id.startsWith('ladder-cpuz-'));
+    expect(benchmarks).toHaveLength(4);
+    for(const set of benchmarks){
+      const expected=rankedLadderCpus.filter(c=>c.platform===set.platform);
+      expect(set.rows.length).toBeGreaterThan(0);
+      expect(new Set(set.rows.map(r=>r.id))).toEqual(new Set(expected.map(c=>c.id)));
+      const mobile=rankedLadderCpus.find(c=>c.name==='Core Ultra 9 285HX')!;
+      expect(set.rows.some(r=>r.id===mobile.id)).toBe(set.platform==='mobile');
+    }
+  });
   it('每条可见曲线都能定位到同版本源数据，SPEC 核心和测试分开',()=>{
     for(const set of sets){
       expect(set.sourceUrl).toMatch(/^https:\/\/www\.socpk\.com\/chart\//);

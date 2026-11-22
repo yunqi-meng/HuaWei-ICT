@@ -75,7 +75,7 @@ export default function TicketDetail() {
           风险提醒：{ticket.risk_flags.join("、")}
         </div>
       )}
-      {msg && <div className="alert-ok">{msg}</div>}
+      {msg && <div className="alert-ok" role="status" aria-live="polite">{msg}</div>}
       {err && (
         <div className="error-box" role="alert">
           {err}
@@ -140,7 +140,7 @@ export default function TicketDetail() {
               {appt.slot.location?.address_note} {appt.slot.bring_note}
             </p>
             {appt.checkin_code && (
-              <div className="alert-ok">
+              <div className="alert-ok" role="status" aria-live="polite">
                 签到码：
                 <strong style={{ fontSize: 18 }}>{appt.checkin_code}</strong>
                 （到场出示）
@@ -282,7 +282,7 @@ export default function TicketDetail() {
         <div className="card">
           <h4>维修记录</h4>
           {ticket.repair_records.map((r) => (
-            <div key={r.id} className="card" style={{ background: "#fafbfc" }}>
+            <div key={r.id} className="card" style={{ background: "var(--surface-soft)" }}>
               <p className="small">
                 <strong>检查：</strong>
                 {r.check_items}

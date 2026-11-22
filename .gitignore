@@ -11,6 +11,7 @@ __pycache__/
 *.db-wal
 *.log
 .venv/
+.opencode/
 artifacts/
 backups/
 uploads/
